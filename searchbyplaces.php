@@ -1,3 +1,5 @@
+
+
 <?php
 
 session_start();
@@ -12,67 +14,36 @@ $res=mysqli_query($conn,$q1);
  $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
  $profile_pic_url=$user["profilepic"];
 
+ if(isset($_GET["place"]))
+ {
+  $place_to_be_shown=mysqli_real_escape_string($conn,$_GET["place"]);
+ }
+
 
 ?>
-
-
 <!DOCTYPE html>
 <html>
 <head>
-	  <!--<link rel="stylesheet" href="navbar.css">-->
-	  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <meta name="keywords" content="cooking,recipes,food">
+  <meta name="description" content="recipe sharing platform">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<style>
+<style>
+  
 .profilepic
 {
 width :40px;
  height:40px;
  border-radius: 50%;
     float: left;
-  position: relative;
-  top:-5px;
-  right: 1px;
 }
-#logo
-{
-
-margin: 50px 50px;
-float: right;
- 
- 
-}
-#i
-{
-  border-radius: 5%;
-}
-#logo:hover {
-  
-  cursor: pointer;
-  transform: scale(1.05); 
-
-  }
-  #logo_2
-{
-
-margin-top: 300px ;
-margin-right:-250px;
-float: right;
-
- 
-}
-
-#logo_2:hover {
-  
-  cursor: pointer;
-  transform: scale(1.05); 
-
-  }
 
 .post{
       
       height:280px;
       width:700px;
-      border-radius: 12px;
+      border-radius: 6px;
       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
      margin-bottom: 25px;
 
@@ -86,23 +57,7 @@ float: right;
     margin-right: 30px;
     margin-left: 30px;
 }
-.content{
-  font-size: 18px;
-}
-.user_detail
-{
-  height: 50px;
-  width:  700px;
-  box-shadow:0 4px 8px 0 rgba(0,0,0,0.2);
-  margin-top: 30px;
-}
-#date_pos
-{
-  float: right;
-  font-size: 12px;
-  margin-top: -90px;
-}
-.tag_cover
+  .tag_cover
 {
   background:#ff3333;
   border-radius: 3px;
@@ -113,42 +68,22 @@ float: right;
   height:23px;
   margin-right: 2px;
 }
-
-#wall
+.everything
 {
-  margin-left: 400px;
-  margin-top: 50px;
-}
-.l_side {
-  position: sticky;
-  top: 0;
-  left:0;
-}
-.r_side {
-  position: sticky;
-  top: 0;
-  right:0;
-  float: left;
-}
-#logo_3
-{
-  margin: 50px 50px;
-}
-#logo_3:hover
-{
- cursor: pointer;
-  transform: scale(1.05);  
+  margin-left: 300px;
+  margin-top: 100px;
 }
 </style>
-<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-    
-     <li class="nav-item">
+       <li class="nav-item">
         <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
       &nbsp 
@@ -161,61 +96,29 @@ float: right;
       <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
-        
     </ul>
   </div>
 </nav>
-</head>
-<body>
 
-<div class="l_side" >
-<div id="logo">
-<a href="addrecipe2.php">
-<img  src="images/addrecipe2.JPG" width="200" height="200" id="i">
-</a>
-</div>
-<br>
-<div id="logo_2" >
-<a href="map.php">
-<img  src="images/explore2.JPG" width="200" height="200" id="i">
-</a>
-</div>
-</div>
+<div class="everything">
 
-<div class="r_side">
-  <div id="logo_3">
-    <a href="leaderb.php">
-      <img src="images/leader.JPG" width="200" height="200" id="i">
-    </a>
-    
-  </div>
-  
-</div>
-
- <div id="wall">
 <?php
 
-
-$q2="SELECT * FROM post_data ORDER BY Timestamp DESC ";
-
-
-$res2=mysqli_query($conn,$q2);
- $posts=mysqli_fetch_all($res2, MYSQLI_ASSOC);
-
-
-
-foreach ($posts as $post) {
-  
-$id_of_poster=$post["U_ID"];
-$q3="SELECT * FROM followers_data WHERE user1_id='$LoggedUID' AND user2_id='$id_of_poster'";
-
+$q3="SELECT * FROM post_data WHERE Origin IS NOT NULL";
 $res3=mysqli_query($conn,$q3);
+$list=mysqli_fetch_all($res3,MYSQLI_ASSOC);
 
-$a=mysqli_fetch_array($res3,MYSQLI_ASSOC);
+foreach ($list as $item) {
 
 
-if(mysqli_num_rows($res3)>0)
+
+
+if($place_to_be_shown==$item["Origin"])
 {
+
+  
+
+  $id_of_poster=$item["U_ID"];
 
 $q4="SELECT * FROM Userinfo WHERE ID='$id_of_poster'";
 $res4=mysqli_query($conn,$q4);
@@ -224,16 +127,17 @@ $posted_by=mysqli_fetch_array($res4,MYSQLI_ASSOC);
 $posted_by_url=$posted_by["profilepic"];
 $profile_pic_name=$posted_by["Name"];
  
- $id=$post["Post_Pic"];
-$q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
+ $id=$item["Post_Pic"];
+ $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 
 $res5=mysqli_query($conn,$q5);
  $post_pic=mysqli_fetch_array($res5, MYSQLI_ASSOC);
 
  $post_pic_url=$post_pic["Location"];
+
  ?>
 
- <div class="post"> 
+<div class="post"> 
 
 <img src="<?php echo $posted_by_url; ?>" class="profilepic"> 
 <span><h4> <?php echo $profile_pic_name; ?></h4></span>
@@ -242,14 +146,18 @@ $res5=mysqli_query($conn,$q5);
   
 <h3>
 <?php
- echo nl2br($post["Title"]."\n");
+ echo nl2br($item["Title"]."\n");
  ?>
   </h3>
 <p id="date_pos">
   <?php
-  $t=date($post["Timestamp"]);
+  $t=date($item["Timestamp"]);
   $curr_time=date("Y-m-d H:i");
   $mt=$curr_time+$t;
+
+
+  //echo $curr_time;
+
 echo nl2br($t."\n");
 
   ?>
@@ -258,14 +166,21 @@ echo nl2br($t."\n");
   
 <span class="content">
 <?php
- echo nl2br($post["Description"]."\n");
+ echo nl2br($item["Description"]."\n");
 
-$current_rec_id=$post["P_ID"];
+echo nl2br("Serves".$item["Serves"]."\n");
+
+echo nl2br("Local to"." ".$item["Origin"]."\n");
+
+ 
+
+$current_rec_id=$item["P_ID"];
+
+
 
 ?>
-<br>
 <?php
-  $array_tags = array_filter(explode (",", $post["Tags"])); 
+  $array_tags = array_filter(explode (",", $item["Tags"])); 
     foreach($array_tags as $tag_v)
     {
           ?>
@@ -274,11 +189,9 @@ $current_rec_id=$post["P_ID"];
        <a href="searchbytag.php?tag_name=<?php echo nl2br ("$tag_v"); ?>"><?php echo nl2br ("$tag_v"); ?>  </a>
 
         </span>
-        <?php
-        
-      }
+<?php
+}
 ?>
-
 </span>
 <br><br><br>
 <div style="margin-left: 550px;margin-top: -30px;">
@@ -287,16 +200,20 @@ View Full Recipe
 </a>
 </div>
 </div>
-<?php 
+
+
+ <?php
+
 }
 
-} ?>
+unset($arra);
+}
+
+
+
+?>
+
 </div>
-
-
-
-
-
 
 
 
@@ -305,4 +222,5 @@ View Full Recipe
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
-</html>
+
+

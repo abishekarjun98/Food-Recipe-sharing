@@ -13,16 +13,26 @@ $_SESSION["flag"]=0;
 
 
 
-$l_id=1;
+
+
+//$l_id=1;
 
 //echo $_SESSION["Latest_pic"]; 
-if($_SESSION["Latest_pic"]==null);
+if(empty($_SESSION["Latest_pic"]))
 {
 	
-	$l_id=$_SESSION["Latest_pic"];
+	$l_id=1;
 	
 }
+else
+{
+	$l_id=$_SESSION["Latest_pic"];
+}
 
+if($l_id==null)
+{
+	$l_id=1;
+}
 
 
 
@@ -90,6 +100,7 @@ $res1=mysqli_query($conn,$q2);
 		border-radius: 8px;
 		padding-left: 30px;
 		padding-top: 30px;
+		margin-bottom: 100px: 
 	}
 	#photoform
 	{
@@ -128,6 +139,12 @@ margin-left: 130px;
 {
 	margin-left: 300px;
 	margin-top: 20px;
+	 
+}
+.btnn
+{
+	background: #ffa31a;
+	border-radius: 6px;
 }
 .post_pic{
 	width: 200px;
@@ -151,22 +168,19 @@ width :40px;
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-         <li class="nav-item">
-        <img src="<?php echo $profile_pic_url ?>" class="profilepic">
+        <li class="nav-item">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
-      <li class="nav-item active">
+      &nbsp 
+      <li class="nav-item">
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="profile.php">Profile</a>
+           <li class="nav-item">
+        <a class="nav-link" href="friends.php">Search </a>
       </li>
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
-           <li class="nav-item">
-        <a class="nav-link" href="friends.php">Connect</a>
-      </li>
-    
         
     </ul>
   </div>
@@ -219,15 +233,18 @@ width :40px;
 					<div class="steps">
 					</div>
 
-
+					<br><br>
+<label for id="origin">This food is native to ?</label>
+<input type="text" name="origin"placeholder="Ex:TamilNadu..">
+<br><br>
 			<input type="Submit" name="Submit">
 
 </form>
 
 
 <div class="btn_grp">
-<button id='create_ingredients'>Add_Ingredients</button>
-<button id='create_steps'>Add_Steps</button>
+<button id='create_ingredients' class="btnn">Add_Ingredients</button>
+<button id='create_steps' class="btnn">Add_Steps</button>
 
 </div>
 
@@ -256,7 +273,11 @@ $(".ingredients").append([
          //$('<input>',{ "name":"ing_"+i,"placeholder":"enter ingredient"+i }),
          $('<input>',{ "name":"ing[]","placeholder":"enter ingredient"+i }),
          //$("<img>",{"src":"images/remove.png","class":"remove_img","onclick":"remove_element('ing_"+i+"')"})
-        $("<img>",{"src":"images/remove.png","class":"remove_ing"})
+        $("<img>",{"src":"images/remove.png","class":"remove_ing"}),
+
+
+
+
 
     ])
 ])
@@ -266,14 +287,14 @@ $(".ingredients").append([
 
  $(".ingredients").on("click",".remove_ing", function(e){ 
         e.preventDefault();
- $(this).parent('div').remove(); //remove inout field
+ $(this).parent('div').remove(); 
  i--;
     })
 
 
  $(".steps").on("click",".remove_step", function(e){ 
         e.preventDefault();
- $(this).parent('div').remove(); //remove inout field
+ $(this).parent('div').remove(); 
  j--;
     })
 
@@ -288,7 +309,7 @@ increment_steps();
 $(".steps").append([
     $('<div/>',{ "id": "steps_"+j }).append([
          //$('<input>',{ "name":"ing_"+i,"placeholder":"enter ingredient"+i }),
-         $('<input>',{ "name":"steps[]","placeholder":"step"+j }),
+         $('<input>',{ "name":"steps[]","placeholder":"step","height":"9"+j }),
          //$("<img>",{"src":"images/remove.png","class":"remove_img","onclick":"remove_element('ing_"+i+"')"})
         $("<img>",{"src":"images/remove.png","class":"remove_step"})
 

@@ -86,12 +86,12 @@ if($_SESSION["flag"]==1)
 {
 $q1= "UPDATE Userinfo SET profilepic='$path' WHERE ID='$logger_id' ";
 
-$q2="INSERT INTO Pic_data VALUES(null,'$path')";
+//$q2="INSERT INTO Pic_data VALUES(null,'$path')";
 
-if(mysqli_query($conn,$q1))
-{
-  mysqli_query($conn,$q2);
-}
+mysqli_query($conn,$q1);
+
+  //mysqli_query($conn,$q2);
+
 
 //$last_id = mysqli_insert_id($conn);
 //$_SESSION["Latest_pic"]=$last_id;
@@ -107,6 +107,8 @@ mysqli_query($conn,$q3);
 
 $last_id = mysqli_insert_id($conn);
 $_SESSION["Latest_pic"]=$last_id;
+
+
 
 
 }

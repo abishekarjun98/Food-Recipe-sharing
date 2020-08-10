@@ -1,5 +1,10 @@
 
+<?php
+session_start();
+$_SESSION["LoggedUID"] = 0;
 
+
+?>
 <!DOCTYPE html>
 <html>
 <head>

@@ -2,6 +2,15 @@
 <?php
 
 include 'db.php';
+session_start();
+$LoggedUID= $_SESSION["LoggedUID"];
+
+
+$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
+
+$res=mysqli_query($conn,$q1);
+ $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+ $profile_pic_url=$user["profilepic"];
 
 ?>
 
@@ -13,6 +22,7 @@ include 'db.php';
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.8.2.js"></script> 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <style>
 	#name{
 		font-size: 20px;
@@ -53,16 +63,53 @@ include 'db.php';
 				-webkit-transform: rotate(359deg);
 		}
 }
-
+.profilepic
+{
+width :40px;
+ height:40px;
+ border-radius: 50%;
+    float: left;
+  position: relative;
+  top:-5px;
+  right: 1px;
+}
 </style>
+<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
+  
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+    
+     <li class="nav-item">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
+      </li>
+      &nbsp 
+      <li class="nav-item">
+        <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
+      </li>
+           <li class="nav-item">
+        <a class="nav-link" href="friends.php">Search Friends,Recipes</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="index.php">Log-out</a>
+      </li>
+        
+    </ul>
+  </div>
+</nav>
+
+
+
 </head>
 <body>
 
 <div id="loader">
-	<img src="images/pizza.png"/>
+	<img src="images/donut.png"/>
 </div>
 <p>
-Can't Find Anything to cook ,Enter the Ingredients You have, We will find the Best Recipe for you!!!
+Find Best Recipes across the Web
 </p>
 <form id="myForm" action="findrecipes.php" method="POST">
    <input type="text" name="fname" placeholder="Enter the Ingredients which you have"  size= "50" style = "height: 50px" ><br>
@@ -106,7 +153,7 @@ $foodname=mysqli_fetch_array($res,MYSQL_ASSOC);
 <script>
 
 	var foodquery = <?php echo json_encode($foodname["entry_content"]); ?>;
-	console.log(foodquery);
+	
 
 var url=" https://www.googleapis.com/customsearch/v1?key=AIzaSyCeOsf_ZutZPxiRMTeBHeQcZzGiiteSnX8&cx=008767739067013867662:qovos-gsxu8&q="+foodquery;
 
@@ -152,6 +199,7 @@ for (var i = 0; i<5 ; i++)
   $(window).load(function() {  
       $("#loader").fadeOut(1000);  
    });
+
 
 
  

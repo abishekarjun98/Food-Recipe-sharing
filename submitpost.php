@@ -5,6 +5,8 @@
 session_start();
 require 'db.php';
 
+
+
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
@@ -32,16 +34,18 @@ if(isset($_POST["tag"]))
 {
   $tags=$_POST["tag"];
 
+ 
+
 }
 
-if(isset($_POST["Title"],$_POST["description"],$_POST["Serves"]))
+if(isset($_POST["Title"],$_POST["description"],$_POST["Serves"],$_POST["origin"]))
 
 {
 
 $Title=$_POST["Title"];
 $description=$_POST["description"];
 $serves=$_POST["Serves"];
-
+$origin=$_POST["origin"];
 }
 ?>
 <!DOCTYPE html>
@@ -58,10 +62,7 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
-.navbar-nav li:hover
-{
-  background-color: #e65000;
-}
+
    .post_content{
             box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             height:auto;
@@ -85,21 +86,18 @@ width :40px;
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
          <li class="nav-item">
-        <img src="<?php echo $profile_pic_url ?>" class="profilepic">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
-      <li class="nav-item active">
+      &nbsp 
+      <li class="nav-item">
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="profile.php">Profile</a>
+           <li class="nav-item">
+        <a class="nav-link" href="friends.php">Search</a>
       </li>
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
-           <li class="nav-item">
-        <a class="nav-link" href="friends.php">Connect</a>
-      </li>
-    
         
     </ul>
   </div>
@@ -157,6 +155,8 @@ echo nl2br ("Serves"." $serves\n");
         
         if (isset($_POST["ing"]) && is_array($_POST["ing"]))
         { 
+
+
     $input_array_name = array_filter($_POST["ing"]); 
     foreach($input_array_name as $field_value){
         $ing_values .= $field_value.",";
@@ -185,6 +185,8 @@ echo nl2br ("Serves"." $serves\n");
         <?php
     if (isset($_POST["steps"]) && is_array($_POST["steps"]))
     { 
+
+      print_r($_POST["steps"]);
     $input_array_name_2 = array_filter($_POST["steps"]); 
     foreach($input_array_name_2 as $field_value)
     {
@@ -205,16 +207,14 @@ echo nl2br ("Serves"." $serves\n");
 </div>
 
 
-<!--
-<form method="post" action="submitpost.php"> 
-        <input type="submit" name="post_btn" value="POST IT !!!">
-        </form>-->
+
 
  <?php
 
  $timestamp = date("m-d H:i");
  $f=0;
-$q3="INSERT INTO post_data VALUES(null,'$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values','$l_id','$f',CURRENT_TIMESTAMP())";
+
+$q3="INSERT INTO post_data VALUES(null,'$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values', '$origin','$l_id','$f',CURRENT_TIMESTAMP())";
 
 /*
 
@@ -224,19 +224,23 @@ $q3="INSERT INTO post_data VALUES(null,'$LoggedUID','$Title','$tag_values','$des
 
 if(mysqli_query($conn, $q3))
 {
-  $last_pic_id = mysqli_insert_id($conn);
-  //echo '<script>alert("Recipe Posted Successfully")</script>'; 
+  $last_id = mysqli_insert_id($conn);
+  
+$q_flame="INSERT INTO flame_data VALUES('$last_id','$f')";
+if(mysqli_query($conn, $q_flame))
+{
+  echo '<script>alert("Recipe Posted Successfully")</script>';
 }
 
-echo $last_pic_id;
-$q4="INSERT INTO flame_data VALUES('$last_pic_id','$f')";
-  mysqli_query($conn,$q4);
-
+}
 
 
 
 $_SESSION["POST_id"]=mysqli_insert_id($conn);
+
+
         ?>
+
 
 
 

@@ -13,6 +13,8 @@ $q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
 $res=mysqli_query($conn,$q1);
  $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
 
+
+
  $profile_pic_url=$user["profilepic"];
 
 
@@ -26,7 +28,29 @@ $res=mysqli_query($conn,$q1);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  
+  #loader {  
+    position: fixed;  
+    left: 0px;  
+    top: 0px;  
+    width: 100%;  
+    height: 100%;  
+    z-index: 9999;
+    margin-top: 300px;
+    margin-left: 700px;
+   -webkit-animation: rotation 2s infinite linear;
+   transform-origin: 0% 0%;
+
+}  
+
+
+ @-webkit-keyframes rotation {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
 .profilepic
 {
 width :40px;
@@ -35,19 +59,17 @@ width :40px;
     float: left;
 }
 
- #t1{
-width: 40%;
-margin-left: 300px;
-margin-top: 50px;
-}
-#Title_1
-{
-  margin-left: 440px;
-  font-size: 30px;
-}
-  
+  #earth_div{
+    
+     margin: 100px 400px;
+     width: 500px;
+     height: 500px;
+     border-style: solid;
+     }
+    
 </style>
 </head>
+
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
@@ -64,72 +86,101 @@ margin-top: 50px;
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
            <li class="nav-item">
-        <a class="nav-link" href="friends.php">Search</a>
+        <a class="nav-link" href="friends.php">Search Friends,Recipes</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
+    
         
     </ul>
   </div>
 </nav>
-<p id="Title_1">Recipes of the Month</p>
-<table class="table table-hover" id="t1">
-  
-  <thead>
- <tr>
-    <th>Position</th>
-    <th>Recipe</th>
-    <th>By</th>
-    <th>Flames</th>
-  </tr>
-</thead>
-<tbody>
+
+<h3 style="margin-left: 450px;">Find Recipes across the Globe!!</h3>
+<div id="earth_div"></div>
+
+
 
 <?php
-$timestamp = date("m");
-$q2="SELECT* FROM post_data WHERE MONTH(Timestamp)='$timestamp' ORDER BY Flames DESC";
+
+$q2="SELECT * FROM post_data WHERE origin IS NOT NULL";
+
 $res2=mysqli_query($conn,$q2);
-$posts=mysqli_fetch_all($res2,MYSQLI_ASSOC);
+$locs=mysqli_fetch_all($res2,MYSQLI_ASSOC);
 
-$count=1;
-foreach ($posts as $post) {
+$all_locs=array();
 
-if($count<11)
+foreach ($locs as $loc) {
+  $c=0;
+  if(!empty($loc["Origin"]))
+  {
+    array_push($all_locs,$loc["Origin"]);
+   
+
+   //echo '<script type="text/javascript">','getdata($loc["Origin"])';'</script>';
+  }
+}
+
+
+?>
+<script src="http://www.webglearth.com/v2/api.js"></script>
+<script>
+
+  let marker=[];
+  let place_name=[];
+  var q;
+  var querys = <?php echo json_encode($all_locs); ?>;
+
+
+  for (var i = 0; i <querys.length ;  i++) 
+  {
+
+    
+    getdata(querys[i],i);
+
+  }
+  
+
+  async function getdata(q,num)
 {
-$curr_post_id=$post["P_ID"];
 
-  ?>
+var url="https://us1.locationiq.com/v1/search.php?key=1deb26f08b907c&q="+q+"&format=json";
+const response=await fetch(url);
+const json=await response.json();
 
+var lat= json[0].lat;
+var lon= json[0].lon;
 
-<tr>
+create_marker(q,lat,lon,num);
 
-<td><?php echo $count; ?></td>
-<td>  
-<a href="displayrecipe.php?ID=<?php echo $curr_post_id ;?>">
-  <?php echo $post["Title"]; ?>
-</a>
-</td>
-
-<?php
-$owner=$post["U_ID"];
-
-$q3="SELECT * FROM Userinfo WHERE ID='$owner'";
-
-$res3=mysqli_query($conn,$q3);
-$user=mysqli_fetch_array($res3,MYSQLI_ASSOC);
-?>
-<td>  <?php echo $user["Name"]; ?></td>
-<td>  <?php echo $post["Flames"]; ?></td>
-<?php  
-$count++;
-}
 }
 
-?>
-</tr>
-</tbody>
-</table>
+       var earth = new WE.map('earth_div');
+        WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(earth);
+      
+
+
+      function create_marker(place,lat,lon,i) {
+
+
+         place_name[i]=place;
+         marker[i] = WE.marker([lat, lon]).addTo(earth);
+
+marker[i].bindPopup("<p>"+ place_name[i] +"</p><br>"+"<a href=searchbyplaces.php?place="+place_name[i]+">View Recipes</a>", {maxWidth: 80,maxHeight:60, closeButton: true});
+
+        //var markerCustom = WE.marker([50, -9], './images/marker.png', 100, 24).addTo(earth);
+
+        earth.setView([20.5937, 78.9629], 2);
+
+
+      }
+
+
+
+
+</script>
+
 
 
 

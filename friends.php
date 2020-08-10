@@ -19,6 +19,7 @@ $res=mysqli_query($conn,$q1);
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	  <!--<link rel="stylesheet" href="navbar.css">-->
 	  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
@@ -37,27 +38,40 @@ width :40px;
   margin-top: -1px; 
   background-color: #f6f6f6;
   padding: 12px;
-  text-decoration: none;
   font-size: 18px;
   color: black;
   display: block;
   margin-top: 10px;
+  border-radius: 6px;
+  height:70px;
+}
+.Post_class{
+  border: 1px solid #ddd;
+  margin-top: -1px; 
+  background-color: #f6f6f6;
+  padding: 12px;
+  height: 150px;
+  font-size: 18px;
+  color: black;
+  display: block;
+  margin-top: 10px;
+  border-radius: 10px;
 }
 
-#People li a:hover:not(.header) {
-  background-color: #eee;
-}
+
 
 #People li:hover:not(.header) {
   
   cursor: pointer;
   transform: scale(1.05); 
 
+
   }
   #People
   {
     margin-left: 300px;
     width: 600px;
+    list-style-type:none;
   }
 
 .link_class
@@ -65,10 +79,21 @@ width :40px;
   border-radius: 4px;
   margin-left: 100px;
   background-color:  #00E506;
+  float: right;
 }
 
 .b_linkclass{
-  margin-left: 100px;
+  float: left;
+  margin-left: 10px;
+}
+.c_linkclass{
+  float: right;
+}
+.post_pic_class
+{
+  height: 100px;
+  width:100px;
+  border-radius: 6px;
 }
 
 #searchbar{
@@ -82,6 +107,10 @@ width :40px;
   margin-bottom: 12px;
   margin-left: 300px;
   
+}
+#more
+{
+  margin-left: 550px;
 }
 </style>
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
@@ -114,12 +143,14 @@ width :40px;
 
 
 <div class="search_people_div">
-<input id="searchbar" onkeyup="search_people()" type="text" name="search" placeholder="Search People......"> 
+<input id="searchbar" onkeyup="search_people()" type="text" name="search" placeholder="Search People,Recipes
+......"> 
 
 <ul id="People"></ul>
 
-
 </div>
+<a id="more" class="btn btn-warning" href="findrecipes.php" type="button"  data-toggle="tooltip" data-placement="top" title="Click here to find More Recipes from the Web">
+  More Recipes</a>
 
 <body>
 
@@ -154,28 +185,24 @@ $res2=mysqli_query($conn,$q4);
 ?>
 
 
-
-//var text_status=<?php //echo json_encode($status); ?>;
-
-
-
 var node = document.createElement("LI"); 
-node.setAttribute("class","People_class")  
+node.setAttribute("class","People_class");
 
         var fimg = document.createElement("IMG");
         fimg.setAttribute("src","<?php echo $user["profilepic"]?>");
         fimg.setAttribute("class","profilepic");
         node.appendChild(fimg);
-        var textnode = document.createTextNode("<?php echo $user["Name"]; ?>");  
-        //textnode.href="profile.php?f_ID=<?php echo $user["ID"] ?>";       
-        node.appendChild(textnode);
         var b=document.createElement('a');
-        var link = document.createTextNode("view profile");
-        b.title="viewprofile"
+        var link = document.createTextNode("<?php echo $user["Name"]; ?>");
+        b.title="<?php echo $user["Name"]; ?>";
         b.appendChild(link);   
-        b.href = "profile.php?f_ID=<?php echo $user["ID"] ?>";
-        b.setAttribute("class","b_linkclass")
+        b.href = 'profile.php?f_ID=<?php echo nl2br($user["ID"]); ?>';
+        b.setAttribute("class","b_linkclass");
         node.appendChild(b);  
+        
+        //var bio_node=document.createTextNode("<?php //echo $user["Bio"]; ?>")
+
+      //  node.appendChild(bio_node);
 
 
 
@@ -206,24 +233,13 @@ var a = document.createElement('a');
 
 <?php
  }
+?>
 
- ?>
+
 
                 
 
 
-/*
-btn.setAttribute("class","btn_class");
-var btn_text=document.createTextNode("Follow");
-btn.appendChild(btn_text);
-node.appendChild(btn);
-
-
-btn.id=<?php echo json_encode($user["ID"]); ?>;
-btn_text.id="<?php echo "text".$user["ID"]; ?>";
-btn.setAttribute('onclick', 'func(<?php echo json_encode($user["Name"]); ?>, <?php echo json_encode($user["ID"]); ?>)');
-
-*/
 
 node.appendChild(a);
 
@@ -236,7 +252,8 @@ document.getElementById("People").appendChild(node);
 
 
 
-
+$("#People").hide();
+$("#more").hide();
 function func(username,k)
 {
   var clicked_btn =document.getElementById(k);
@@ -247,26 +264,35 @@ function func(username,k)
 }
 
 function search_people() { 
-    let input = document.getElementById('searchbar').value 
+
+  
+    let input = document.getElementById('searchbar').value ;
     input=input.toLowerCase(); 
-    let x = document.getElementsByClassName("People_class"); 
-      
-    for (i = 0; i < x.length; i++) {  
+    //let x = document.getElementsByClassName("People_class");
+    let x = $(".Post_class,.People_class");
+   
+    console.log(x);
+
+
+  for (i = 0; i < x.length; i++) {  
         if (!x[i].innerHTML.toLowerCase().includes(input)) { 
             x[i].style.display="none"; 
         } 
+        
         else { 
+$("#People").show();
+$("#more").show();
+
             x[i].style.display="list-item";                  
         } 
     } 
 } 
 
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
 
 </script>
-
-
-
-
 
 
 
@@ -274,6 +300,7 @@ function search_people() {
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script type="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 </body>
 </html>
 
@@ -305,17 +332,77 @@ if(isset($_GET["rej_ID"]))
 
   $q5="DELETE FROM followers_data WHERE user1_id='$LoggedUID'AND user2_id='$ID_to_rej' ";
 
-  if ($conn->query($q5) === TRUE)
+  if (mysqli_query($conn,$q5))
   {
 
-  
-echo '<script type="text/javascript">location.reload();</script>';
-
-//echo '<script>alert("Un followed")</script>';
+//echo '<script type="text/javascript">location.reload();</script>';
+echo '<script>alert("Un followed")</script>';
   
 }
 }
 
 
 
+?>
+
+<?php
+
+
+$q_posts="SELECT* FROM post_data ";
+
+$res_posts=mysqli_query($conn,$q_posts);
+$list_posts=mysqli_fetch_all($res_posts,MYSQLI_ASSOC);
+
+//print_r($list_posts);
+
+foreach ($list_posts as $post) {
+  
+ // echo $post["Title"];
+ $id=$post["Post_Pic"];
+$qpic="SELECT * FROM pic_data WHERE Pic_id='$id'";
+
+$respic=mysqli_query($conn,$qpic);
+ $post_picture=mysqli_fetch_array($respic, MYSQLI_ASSOC);
+
+ $pic_url=$post_picture["Location"];
+
+?>
+
+
+
+
+<script type="text/javascript">
+  
+
+  var post_node=document.createElement("LI");
+  post_node.setAttribute("class","Post_class");
+
+   var pimg = document.createElement("IMG");
+        pimg.setAttribute("src","<?php echo $pic_url?>");
+        pimg.setAttribute("class","post_pic_class");
+        post_node.appendChild(pimg);
+
+
+
+
+  var textnode2 = document.createTextNode("<?php echo " ".$post["Title"]; ?>");        
+        post_node.appendChild(textnode2);
+
+        var c= document.createElement('a');
+        var link_post = document.createTextNode("view Recipe");
+        c.title="view recipe";
+        c.appendChild(link_post);   
+        c.href = "displayrecipe.php?ID=<?php echo $post["P_ID"];?>";
+        c.setAttribute("class","c_linkclass");
+        post_node.appendChild(c);  
+
+
+
+document.getElementById("People").appendChild(post_node);
+
+
+</script>
+
+<?php
+}
 ?>

@@ -7,6 +7,13 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
+if($_SESSION["LoggedUID"]==0)
+{
+  
+header("Location: index.php");
+
+}
+
 
 $q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
 
@@ -45,19 +52,22 @@ $res3=mysqli_query($conn,$q3);
  $post_pic_url=$post_pic["Location"];
 
 
-$q4="SELECT * FROM post_data WHERE P_ID='$ID_to_be_displayed'";
+$q4="SELECT * FROM flame_data WHERE P_ID='$ID_to_be_displayed'";
   $res4= mysqli_query($conn,$q4);
   $curr=mysqli_fetch_array($res4,MYSQLI_ASSOC);
    $oldflames=$curr["Flames"];
 
+  // echo $oldflames;
+
 if(isset($_GET['flame'])) {
- 
-  $newflames=$oldflames+1;
-  $q5="UPDATE post_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
- // $q5="UPDATE flame_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed";
+    
+    $newflames=$oldflames+1;
+    echo $newflames;
+ // $q5="UPDATE post_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
+  $q5="UPDATE flame_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
 
   mysqli_query($conn,$q5);
-  header("Location:displayrecipe.php");
+  header("Location:displayrecipe.php?ID="."$ID_to_be_displayed");
 
   }
 
@@ -71,202 +81,7 @@ if(isset($_GET['flame'])) {
  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
  	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-<style>
-  
-.profilepic
-{
-width :40px;
- height:40px;
- border-radius: 50%;
-    float: left;
-}
-.navbar-nav li:hover
-{
-  background-color: #e65000;
-}
-   .post_content{
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            height:auto;
-            width:400px;
-            margin-top: 50px;
-            margin-left:100px;
-            float: left;
-}
-.post_pic{
-    width: 250px;
-    height: 250px;
-    margin-left: 50px;
-    border-radius: 6px;
-}
-.btn_u
-{
-width: 30px;
-height: 30px;
-float: right;
-margin-right: 200px;
-}
-  input[type="file"] {
-    display: none;
-}
-.camera_btn{
-width: 40px;
-height: 40px;
-float: left;
-margin-left: 130px;
-}
-.camera_btn:hover
-        {
-            
-            cursor: pointer;
-        }
-#flame
-{
-  width: 20px;
-  height: 20px;
-  margin-left: 50px;
-  
-
-}
-#flame:hover {
-  
-  cursor: pointer;
-  transform: scale(1.3); 
-
-  }
-  #cmt
-{
-  width: 20px;
-  height: 20px;
-  
-margin-left: 345px;
-
-  
-}
-#cmt:hover {
-  
-  cursor: pointer;
-  transform: scale(1.3); 
-
-  }
-  @-ms-viewport{
-  width: device-width;
-}
-
-#comment_section
-{
-  width:330px;
-  height: 500px;
-  float: right;
-  border-radius:6px;
-  background-color: #d9d9d9;
-  margin-top: 10px;
-  margin-right: 200px;
-  padding-top: 5px;
-  padding-left: 6px;
-   overflow: auto;
-
-}
-#comment_text
-{
-  width:330px;
-  height:50px;
-  padding-left: 100px;
-  border-radius:6px;
-  margin-right: 200px;
-  margin-top: 30px;
-  background-color: #eee;
-  float: right;
-  
-}
-.comment_box
-{
-  
-  border-radius:6px; 
-  width: 230px;
-}
-.send_btn
-{
-  float: right;        
-  width:30px;
-  height:30px;
-  margin-right: 5px;
-}
-.comment_ind
-{
-  width:300px;
-  height:70px;
-   background-color: #eee;
- 
-  border-radius:6px;
-  margin-top: 20px;
- 
-}
-
-.timeline{
-   padding: 8px 16px;
-   background-color: #00E506;
-   text-decoration-line: none;
-   border-radius: 6px;
-    margin-right: 500px;
-}
-#logo
-{
-  position: relative;
-z-index:99999;
-left:70px;
-top:20px;
-border-radius: 6px;
-}
-.v_pic
-{
-  border-radius: 6px;
-  width:100px;
-  height: 100px; 
-  margin-bottom: 30px;
-}
-.v_pic:hover
-{
-  transform: scale(1.3); 
-}
-.boxy
-{
-  margin-top:50px;
-  height: 500px;
-  width: 330px;
-  background-color: #eee;
-  float: left;
-  overflow:auto;
-  margin-left: 50px;
-  padding-left: 15px;
-}
-#b_2
-{
-  width: 330px;
-  float: left;
-  margin-top: 560px;
-  margin-left: -330px;
-}
-.v_text
-{
-
-  margin-left: 80px;
-  width:100px;
-  height:50px;
-  border-radius:6px;
-  background-color: #eee;
-  float: left;
-  
-}
-.hide {
-  display: none;
-}
-    
-.v_name:hover + .hide {
-  display: block;
-  color: red;
-}
- 
-</style>
+<link rel="stylesheet" href="displayrecipe.css">
 	<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -274,20 +89,18 @@ border-radius: 6px;
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-         <li class="nav-item">
-        <img src="<?php echo $profile_pic_url ?>" class="profilepic">
+       <li class="nav-item">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
-      <li class="nav-item active">
+      &nbsp 
+      <li class="nav-item">
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="profile.php">Profile</a>
-      </li>
-       <li class="nav-item">
-        <a class="nav-link" href="index.php">Log-out</a>
-      </li>
            <li class="nav-item">
-        <a class="nav-link" href="friends.php">Connect</a>
+        <a class="nav-link" href="friends.php">Search </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="index.php">Log-out</a>
       </li>
     
         
@@ -298,11 +111,9 @@ border-radius: 6px;
 <body>
 
   
-<!--
-  <div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v7.0" nonce="tsJO7jZE"></script>
 
--->
+
+
 
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -389,9 +200,8 @@ else if(mysqli_num_rows($res9)==0)
 </a>
 <?php echo $oldflames; ?>
 
-<a href='displayrecipe.php?comment=true'>
+
   <img src="images/comment.png" id="cmt">
-</a>
 
 
 <?php 
@@ -405,16 +215,19 @@ echo sizeof($comm);
 
 
 
-<!--
-<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="Check out this Recipe!!! <?php echo $the_post["Title"] ?>  via recipe.com"
+  <!--
+<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" id="tw" data-text="Check out this Recipe!!! <?php //echo $the_post["Title"] ?>  via recipe.com"
 
- data-hashtags="#food #recipe" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+ data-hashtags="food #recipe" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
+<br> 
+
+<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
 -->
-<!--
-<div class="fb-share-button" data-href="http://localhost/finalproj/displayrecipe.php<?php //echo $the_post["P_ID"]?>" data-layout="button_count" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
-add the page url after hosting
--->
+
+<br>
+<button id='btnSpeak'>Read out the Recipe</button>
+
 
 <h3>
 <?php
@@ -453,7 +266,7 @@ echo "Serves".$the_post['Serves'];
     </div>
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-      <div class="card-body">
+      <div class="card-body" >
         <?php
         $count_1=1;
 
@@ -483,7 +296,7 @@ echo "Serves".$the_post['Serves'];
       </h2>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-      <div class="card-body">
+      <div class="card-body" id="ingee">
         <?php
 
         $count_2=1;
@@ -565,12 +378,54 @@ else if(mysqli_num_rows($res6)==0)
   <?php
 }
 ?>
+
 </div>
 
+<script>
+
+var txtInput = document.querySelector('#ingee');
+  var btnSpeak = document.querySelector('#btnSpeak');
+     
+        var synth = window.speechSynthesis;
+        var voices = [];
+
+        PopulateVoices();
+        if(speechSynthesis !== undefined){
+            speechSynthesis.onvoiceschanged = PopulateVoices;
+        }
+
+        btnSpeak.addEventListener('click', ()=> {
+            var toSpeak = new SpeechSynthesisUtterance(txtInput.innerHTML);
+            var selectedVoiceName = voices[0]; //voiceList.selectedOptions[0].getAttribute('data-name');
+            voices.forEach((voice)=>{
+                if(voice.name === selectedVoiceName){
+                    toSpeak.voice = voice;
+                }
+            });
+            synth.speak(toSpeak);
+            synth.rate=0.7;
+        });
+
+        function PopulateVoices(){
+            voices = synth.getVoices();
+            var selectedIndex = 0;//voiceList.selectedIndex < 0 ? 0 : voiceList.selectedIndex;
+           // voiceList.innerHTML = '';
+            voices.forEach((voice)=>{
+                var listItem = document.createElement('option');
+                listItem.textContent = voice.name;
+                listItem.setAttribute('data-lang', voice.lang);
+                listItem.setAttribute('data-name', voice.name);
+                //voiceList.appendChild(listItem);
+            });
+            //voiceList.selectedIndex = selectedIndex;
+        }
+
+</script>
 
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
 </body>
 </html>

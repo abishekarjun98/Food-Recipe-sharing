@@ -9,14 +9,55 @@ $LoggedUID= $_SESSION["LoggedUID"];
 
 
 $q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
-
 $res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+$user=mysqli_fetch_array($res, MYSQLI_ASSOC);
 
- $profile_pic_url=$user["profilepic"];
+$profile_pic_url=$user["profilepic"];
+
+$people= array();
+if(isset($_GET["a_ID"]))
+{
+$a_ID=mysqli_real_escape_string($conn,$_GET["a_ID"]);
+
+$qfollowers="SELECT * FROM followers_data WHERE user1_id='$a_ID'";
+$res_ers=mysqli_query($conn,$qfollowers);
+$list_ers=mysqli_fetch_all($res_ers);
+
+foreach ($list_ers as $person) {
+  
+  array_push($people, $person[1]);
+
+}
+
+$text="Following";
+
+
+}
+
+if(isset($_GET["b_ID"]))
+{
+  $b_ID=mysqli_real_escape_string($conn,$_GET["b_ID"]);
+  $qfollowing="SELECT * FROM followers_data WHERE user2_id='$b_ID'";
+  $res_ers=mysqli_query($conn,$qfollowing);
+$list_ers=mysqli_fetch_all($res_ers);
+
+
+
+foreach ($list_ers as $person) {
+ array_push($people, $person[0]);
+  
+
+}
+
+$text=" Followers";
+
+}
 
 
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,19 +74,22 @@ width :40px;
  height:40px;
  border-radius: 50%;
     float: left;
+    margin-right: 10px;
 }
 
- #t1{
-width: 40%;
-margin-left: 300px;
-margin-top: 50px;
-}
-#Title_1
-{
-  margin-left: 440px;
-  font-size: 30px;
-}
+.People_class{
+  border: 1px solid #ddd;
+  background-color: #f6f6f6;
+  padding: 12px;
+  font-size: 18px;
+  color: black;
+  display: block;
+  margin-top: 10px;
+  border-radius: 6px;
+  width: 400px;
   
+}
+
 </style>
 </head>
 <body>
@@ -56,7 +100,7 @@ margin-top: 50px;
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
       &nbsp 
@@ -73,63 +117,38 @@ margin-top: 50px;
     </ul>
   </div>
 </nav>
-<p id="Title_1">Recipes of the Month</p>
-<table class="table table-hover" id="t1">
-  
-  <thead>
- <tr>
-    <th>Position</th>
-    <th>Recipe</th>
-    <th>By</th>
-    <th>Flames</th>
-  </tr>
-</thead>
-<tbody>
 
+<div  style="margin: 50px 400px;">
+  <h3>
+    <?php echo $text; ?>
+  </h3>
 <?php
-$timestamp = date("m");
-$q2="SELECT* FROM post_data WHERE MONTH(Timestamp)='$timestamp' ORDER BY Flames DESC";
-$res2=mysqli_query($conn,$q2);
-$posts=mysqli_fetch_all($res2,MYSQLI_ASSOC);
 
-$count=1;
-foreach ($posts as $post) {
 
-if($count<11)
-{
-$curr_post_id=$post["P_ID"];
+foreach ($people as $person) {
+  
+  $qdata="SELECT* FROM Userinfo WHERE ID=$person";
+  $resdata=mysqli_query($conn,$qdata);
+  $data=mysqli_fetch_array($resdata,MYSQLI_ASSOC);
 
+  
+$pic_url=$data["profilepic"];
   ?>
 
 
-<tr>
+  <div class="People_class" >
+<a href="profile.php?f_ID=<?php echo $data["ID"] ?>"><?php echo $data["Name"]; ?></a>
+<img src="<?php echo $pic_url;?>" class="profilepic">
+<br>
+<?php echo $data["Bio"]; ?>
+</div>
+  <?php
 
-<td><?php echo $count; ?></td>
-<td>  
-<a href="displayrecipe.php?ID=<?php echo $curr_post_id ;?>">
-  <?php echo $post["Title"]; ?>
-</a>
-</td>
 
-<?php
-$owner=$post["U_ID"];
-
-$q3="SELECT * FROM Userinfo WHERE ID='$owner'";
-
-$res3=mysqli_query($conn,$q3);
-$user=mysqli_fetch_array($res3,MYSQLI_ASSOC);
-?>
-<td>  <?php echo $user["Name"]; ?></td>
-<td>  <?php echo $post["Flames"]; ?></td>
-<?php  
-$count++;
 }
-}
-
 ?>
-</tr>
-</tbody>
-</table>
+</div>
+
 
 
 

@@ -36,6 +36,7 @@
 			var $bg = $("<input type='text' class='autofill-bg' disabled/>").css({
 				"color":color,
 				"top": top,
+				"font-size":"35px",
 				"outline":"none"
 			});
 			
