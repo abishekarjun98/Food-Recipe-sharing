@@ -8,10 +8,8 @@ require 'db.php';
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
+$user=get_user($LoggedUID);
 
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
  $profile_pic_url=$user["profilepic"];
 
  if(isset($_GET["tag_name"]))
@@ -106,8 +104,8 @@ width :40px;
 <?php
 
 $q3="SELECT * FROM post_data WHERE Tags IS NOT NULL";
-$res3=mysqli_query($conn,$q3);
-$list=mysqli_fetch_all($res3,MYSQLI_ASSOC);
+
+$list=give($q3);
 
 foreach ($list as $item) {
 
@@ -121,20 +119,14 @@ if(in_array($tag_to_be_shown,$arra))
 
   $id_of_poster=$item["U_ID"];
 
-$q4="SELECT * FROM Userinfo WHERE ID='$id_of_poster'";
-$res4=mysqli_query($conn,$q4);
-$posted_by=mysqli_fetch_array($res4,MYSQLI_ASSOC);
+$posted_by=get_user($id_of_poster);
 
 $posted_by_url=$posted_by["profilepic"];
 $profile_pic_name=$posted_by["Name"];
  
  $id=$item["Post_Pic"];
- $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 
-$res5=mysqli_query($conn,$q5);
- $post_pic=mysqli_fetch_array($res5, MYSQLI_ASSOC);
-
- $post_pic_url=$post_pic["Location"];
+ $post_pic_url=get_pic($id);
 
  ?>
 

@@ -8,17 +8,16 @@ require 'db.php';
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
 
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+$profile =get_user($LoggedUID);
 
-
-
- $profile_pic_url=$user["profilepic"];
+$profile_pic_url=$profile["profilepic"];
 
 
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,10 +35,7 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
-.navbar-nav li:hover
-{
-  background-color: #006603;
-}
+
   
 </style>
 </head>
@@ -50,23 +46,21 @@ width :40px;
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-         <li class="nav-item">
-        <img src="<?php echo $profile_pic_url ?>" class="profilepic">
+      <ul class="navbar-nav">
+    
+     <li class="nav-item">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
-      <li class="nav-item active">
+      &nbsp 
+      <li class="nav-item">
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="profile.php">Profile</a>
+           <li class="nav-item">
+        <a class="nav-link" href="friends.php">Search</a>
       </li>
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
-           <li class="nav-item">
-        <a class="nav-link" href="friends.php">Connect</a>
-      </li>
-    
         
     </ul>
   </div>

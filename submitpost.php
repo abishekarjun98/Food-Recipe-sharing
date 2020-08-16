@@ -47,6 +47,17 @@ $description=$_POST["description"];
 $serves=$_POST["Serves"];
 $origin=$_POST["origin"];
 }
+
+if(isset($_GET["C_ID"]))
+{
+$c_id=mysqli_real_escape_string($conn,$_GET["C_ID"]);
+}
+else
+{
+$c_id=0;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -213,13 +224,14 @@ echo nl2br ("Serves"." $serves\n");
 
  $timestamp = date("m-d H:i");
  $f=0;
+ $def_id=0;
 
-$q3="INSERT INTO post_data VALUES(null,'$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values', '$origin','$l_id','$f',CURRENT_TIMESTAMP())";
 
-/*
 
-  if(mysqli_query($conn, $q4))
-  */
+
+  $q3="INSERT INTO post_data VALUES(null,'$c_id','$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values', '$origin','$l_id','$f',CURRENT_TIMESTAMP())";
+
+
 
 
 if(mysqli_query($conn, $q3))

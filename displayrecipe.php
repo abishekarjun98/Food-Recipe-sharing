@@ -7,20 +7,11 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
-if($_SESSION["LoggedUID"]==0)
-{
-  
-header("Location: index.php");
-
-}
 
 
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
 
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
-
- $profile_pic_url=$user["profilepic"];
+$user =get_user($LoggedUID);
+$profile_pic_url=$user["profilepic"];
 
 if(isset($_GET["ID"]))
 {
@@ -29,7 +20,7 @@ if(isset($_GET["ID"]))
   $ID_to_be_displayed=mysqli_real_escape_string($conn,$_GET["ID"]);
   $_SESSION["curr_POST"]=$ID_to_be_displayed;
 
- // echo $ID_to_be_displayed;
+ 
 }
 else {
    $ID_to_be_displayed=$_SESSION["curr_POST"];
@@ -38,32 +29,27 @@ else {
 
 
 $q2="SELECT * FROM post_data WHERE P_ID='$ID_to_be_displayed'";
-$res2= mysqli_query($conn,$q2);
-$the_post=mysqli_fetch_array($res2,MYSQLI_ASSOC);
-//print_r($the_post);
-
-
+$the_post=give_unique($q2);
 $id=$the_post["Post_Pic"];
-$q3="SELECT * FROM pic_data WHERE Pic_id='$id'";
-
-$res3=mysqli_query($conn,$q3);
- $post_pic=mysqli_fetch_array($res3, MYSQLI_ASSOC);
-
- $post_pic_url=$post_pic["Location"];
 
 
-$q4="SELECT * FROM flame_data WHERE P_ID='$ID_to_be_displayed'";
-  $res4= mysqli_query($conn,$q4);
-  $curr=mysqli_fetch_array($res4,MYSQLI_ASSOC);
+
+
+  
+ $post_pic_url=get_pic($id);
+
+
+  $q4="SELECT * FROM flame_data WHERE P_ID='$ID_to_be_displayed'";
+  $curr=give_unique($q4);
    $oldflames=$curr["Flames"];
 
-  // echo $oldflames;
+  
 
 if(isset($_GET['flame'])) {
     
     $newflames=$oldflames+1;
     echo $newflames;
- // $q5="UPDATE post_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
+
   $q5="UPDATE flame_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
 
   mysqli_query($conn,$q5);
@@ -80,6 +66,65 @@ if(isset($_GET['flame'])) {
 <head>
  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
  	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://kit.fontawesome.com/ffbc884c21.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v8.0" nonce="4P9EzdVY"></script>
+ <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<style>
+ 
+  #tw
+{
+
+float: right;
+margin-top: 100px;
+}
+#fb
+{
+  float: right;
+  margin-top: -100px;
+}
+  .fa {
+    margin-top: -240px;
+  font-size: 30px;
+  cursor: pointer;
+  user-select: none;
+    color: #00E506;
+    float: right;
+    margin-right: 10px;
+}
+.flame
+{
+  width: 20px;
+  height: 20px;
+  margin-left: 100px;
+
+  
+
+}
+.flame:hover {
+  
+  cursor: pointer;
+  transform: scale(1.3); 
+  }
+  .play
+{
+  width: 20px;
+  height: 20px;
+ 
+
+}
+.play:hover {
+  
+  cursor: pointer;
+  transform: scale(1.3); 
+
+  }
+
+
+</style>
 
 <link rel="stylesheet" href="displayrecipe.css">
 	<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
@@ -157,9 +202,7 @@ foreach ($versions as $version) {
 $url=$version["pic"];
 $id_v=$version["T_By"];
 
-$q9="SELECT * FROM Userinfo WHERE ID='$id_v'";
-$res9=mysqli_query($conn,$q9);
- $user_v=mysqli_fetch_array($res9, MYSQLI_ASSOC);
+$user_v=get_user($id_v);
 
 
 ?>
@@ -186,47 +229,54 @@ else if(mysqli_num_rows($res9)==0)
 
 </div>
 
-<button type="button" id="b_2" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add ur Version</button>
+<button type="button" id="b_2" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add your Version</button>
 
 <div class="post_content" >
 
 <img src="<?php echo $post_pic_url ?>" class="post_pic">
 
-<!--<img src="images/flame.png" class="flame" onclick="addflame()">-->
+  <div id="tw">
+<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button"  data-text="Check out this Recipe!!!<?php echo $the_post["Title"] ?>  via recipe.com"
+
+ data-hashtags="food #recipe" data-show-count="false"></a>
+</div>
+
+
+
+<div id="fb" class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore"></a>
+</div>
+
+
+<br>
+
 
 
 <a href='displayrecipe.php?flame=true'>
-  <img src="images/flame.png" id="flame">
+  <img src="images/flame.png" class="flame">
 </a>
 <?php echo $oldflames; ?>
 
+&nbsp
 
-  <img src="images/comment.png" id="cmt">
-
-
-<?php 
+  <img src="images/comment.png" class="flame">
+  <?php 
 
 $q8="SELECT * FROM comments WHERE P_ID='$ID_to_be_displayed'";
-$res_8=mysqli_query($conn,$q8);
-$comm=mysqli_fetch_all($res_8,MYSQLI_ASSOC);
+
+$comm=give($q8);
 echo sizeof($comm);
  ?>
 
+ &nbsp &nbsp
+
+ <i id="bookmark-toggle" onclick="myFunction(this)" class="fa fa-bookmark-o"></i>
+ <br> <br>
+<img src="images/speaker.png" id='btnSpeak' class="play">
+&nbsp &nbsp
+
+<img src="images/pause.svg" id='btnpause' class="play">
 
 
-
-  <!--
-<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" id="tw" data-text="Check out this Recipe!!! <?php //echo $the_post["Title"] ?>  via recipe.com"
-
- data-hashtags="food #recipe" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<br> 
-
-<div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
--->
-
-<br>
-<button id='btnSpeak'>Read out the Recipe</button>
 
 
 <h3>
@@ -346,9 +396,7 @@ echo "Serves".$the_post['Serves'];
   foreach ($comments as $comment) {
     $curr_user=$comment["C_By"];
 
-  $q7="SELECT * FROM Userinfo WHERE ID='$curr_user'";
-  $res7=mysqli_query($conn,$q7);
- $commented_user=mysqli_fetch_array($res7, MYSQLI_ASSOC);
+ $commented_user=get_user($curr_user);
 
  $commented_profile_pic_url=$commented_user["profilepic"];
  $commented_user_name=$commented_user["Name"];
@@ -404,6 +452,13 @@ var txtInput = document.querySelector('#ingee');
             });
             synth.speak(toSpeak);
             synth.rate=0.7;
+            synth.resume();         
+            
+
+        });
+
+        btnpause.addEventListener('click',()=>{
+          synth.pause();
         });
 
         function PopulateVoices(){
@@ -419,6 +474,56 @@ var txtInput = document.querySelector('#ingee');
             });
             //voiceList.selectedIndex = selectedIndex;
         }
+
+
+function myFunction(x) {
+
+ if(x.classList.toggle("fa-bookmark-o"))
+ {
+  console.log("aaa");
+
+  <?php
+
+  
+$q11="DELETE FROM saved WHERE P_ID='$ID_to_be_displayed'AND UID='$LoggedUID' ";
+
+
+
+
+if(mysqli_query($conn, $q11))
+{
+//echo "haha";
+}
+  
+else
+{
+ 
+  echo "Error deleting record: " . mysqli_error($conn); 
+}
+
+  ?>
+
+
+
+ }
+
+ else if(x.classList.toggle("fa-bookmark"))
+ {
+  console.log("BBB");
+  <?php
+$q8="INSERT INTO Saved VALUES ('$LoggedUID',$ID_to_be_displayed)";
+
+mysqli_query($conn,$q8);
+
+  ?>
+}
+
+
+
+
+}
+
+
 
 </script>
 

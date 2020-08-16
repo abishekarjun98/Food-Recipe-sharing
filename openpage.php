@@ -6,10 +6,7 @@ require 'db.php';
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
-
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+$user =get_user($LoggedUID);
  $profile_pic_url=$user["profilepic"];
 
 
@@ -19,8 +16,8 @@ $res=mysqli_query($conn,$q1);
 <!DOCTYPE html>
 <html>
 <head>
-	  <!--<link rel="stylesheet" href="navbar.css">-->
 	  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/ffbc884c21.js" crossorigin="anonymous"></script>
 
 	<style>
 .profilepic
@@ -120,7 +117,7 @@ float: right;
   margin-top: 50px;
 }
 .l_side {
-  position: sticky;
+position: sticky;
   top: 0;
   left:0;
 }
@@ -138,6 +135,34 @@ float: right;
 {
  cursor: pointer;
   transform: scale(1.05);  
+}
+
+#grp
+{
+  margin-left: 310px;
+}
+.bulb
+{
+  width :40px;
+ height:40px;
+ border-radius: 50%;
+}
+.bulb:hover
+{
+  transform: scale(1.2);
+}
+
+#b_btn
+{
+  margin-top: 200px;
+  float: left;
+  margin-left: 70px;
+}
+#audio
+{
+  margin-top: 200px;
+  float: right;
+  margin-right: 100px;
 }
 </style>
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
@@ -167,7 +192,7 @@ float: right;
 </nav>
 </head>
 <body>
-
+<!--
 <div class="l_side" >
 <div id="logo">
 <a href="addrecipe2.php">
@@ -191,6 +216,78 @@ float: right;
   </div>
   
 </div>
+-->
+
+
+
+
+
+<button type="button" class="btn btn-light" data-toggle="modal" data-target="#daily_tip" id="b_btn">
+  Click Here for a <br> Daily-Tip!!!<br>
+  <img src="images/bulb.png" class="bulb">
+</button>
+
+<a id="audio"class="btn btn-light" href="audio_book.php" type="button"  data-toggle="tooltip" data-placement="top">
+  Audio Recipe<br> Book!<br><img src="images/audio.png" class="bulb"></a>
+
+
+<div class="modal fade" id="daily_tip" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Daily Tip</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <?php
+        $num=rand(0,60);
+        $q_tips="SELECT * from daily_tips WHERE ID='$num'";
+        $tip=give_unique($q_tips);
+        print_r($tip["Tip"]);
+
+        ?>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<?php
+
+
+$q6="SELECT* FROM comp_data WHERE '$curr_date'< End_date ";
+  $posts= give($q6);
+
+  $num=sizeof($posts);
+
+
+?>
+
+
+
+
+
+<div class="btn-group" id="grp" role="group" aria-label="Basic example">
+  <a id="btn_1" class="btn btn-warning" href="addrecipe2.php" type="button" data-placement="top"><i class="fas fa-plus-square"></i>&nbsp
+  Add Recipes</a>
+
+    <a id="btn_2" class="btn btn-warning" href="map.php" type="button" data-placement="top"><i class="fas fa-globe-africa"></i>&nbsp
+  Explore</a>
+
+<a id="btn_3" class="btn btn-warning" href="compete.php" type="button" data-placement="top"><i class="fas fa-trophy"></i>
+  Contests &nbsp<span class="badge badge-light"><?php echo $num; ?></span></a>
+
+<a id="btn_4" class="btn btn-warning" href="leaderb.php" type="button" data-placement="top"><i class="fas fa-flag-checkered"></i>&nbsp
+  LeaderBoard</a>
+
+
+</div>
 
  <div id="wall">
 <?php
@@ -198,39 +295,42 @@ float: right;
 
 $q2="SELECT * FROM post_data ORDER BY Timestamp DESC ";
 
-
-$res2=mysqli_query($conn,$q2);
- $posts=mysqli_fetch_all($res2, MYSQLI_ASSOC);
-
+$posts=give($q2);
 
 
 foreach ($posts as $post) {
   
 $id_of_poster=$post["U_ID"];
+
 $q3="SELECT * FROM followers_data WHERE user1_id='$LoggedUID' AND user2_id='$id_of_poster'";
 
 $res3=mysqli_query($conn,$q3);
 
 $a=mysqli_fetch_array($res3,MYSQLI_ASSOC);
 
+//$a=give_unique($q3);
+
+
 
 if(mysqli_num_rows($res3)>0)
 {
 
-$q4="SELECT * FROM Userinfo WHERE ID='$id_of_poster'";
-$res4=mysqli_query($conn,$q4);
-$posted_by=mysqli_fetch_array($res4,MYSQLI_ASSOC);
+
+$posted_by=get_user($id_of_poster);
 
 $posted_by_url=$posted_by["profilepic"];
 $profile_pic_name=$posted_by["Name"];
  
  $id=$post["Post_Pic"];
+
+
 $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 
-$res5=mysqli_query($conn,$q5);
- $post_pic=mysqli_fetch_array($res5, MYSQLI_ASSOC);
+
+ $post_pic=give_unique($q5);
 
  $post_pic_url=$post_pic["Location"];
+
  ?>
 
  <div class="post"> 
@@ -292,7 +392,6 @@ View Full Recipe
 
 } ?>
 </div>
-
 
 
 

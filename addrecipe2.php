@@ -11,10 +11,6 @@ $LoggedUID= $_SESSION["LoggedUID"];
 
 $_SESSION["flag"]=0;
 
-
-
-
-
 //$l_id=1;
 
 //echo $_SESSION["Latest_pic"]; 
@@ -52,12 +48,17 @@ $res1=mysqli_query($conn,$q2);
 
  $profile_pic_url=$user1["profilepic"];
 
- //echo $profile_pic_url."dddd";
- //echo $user1["Name"];
 
+ if(isset($_GET["C_ID"]))
+{
+ $Contest_id=mysqli_real_escape_string($conn,$_GET["C_ID"]);
+ }
+ else
+ {
+ 	$Contest_id=0;
+ }
 
-
-
+//echo $Contest_Id;
 ?>
 
 
@@ -159,6 +160,12 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
+#Record
+{
+	float: right;
+	margin-top: -600px;
+	margin-right: 100px;
+}
 
 </style>
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
@@ -206,7 +213,7 @@ width :40px;
 </form>
 </div>
 
-<form method="POST" action="submitpost.php" id="myform">
+<form method="POST" action="submitpost.php?C_ID=<?php echo $Contest_id;?> " id="myform">
 	<input type="text" name="Title" placeholder="Title">
 	<br><br><br>
 		<input type="text" id="tag" name="tag"  value="veg"/>
@@ -239,6 +246,14 @@ width :40px;
 <br><br>
 			<input type="Submit" name="Submit">
 
+</form>
+
+<form action="recorder.php" method="POST" id="Record">
+	<h4>Add a Audio Recipe</h4>
+  <input type="text" name="Title" placeholder="Enter the Title">
+  <br>
+  <input type="submit" name="submit">
+  
 </form>
 
 

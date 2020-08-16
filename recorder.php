@@ -12,9 +12,16 @@ $profile =get_user($LoggedUID);
 
 $profile_pic_url=$profile["profilepic"];
 
- $filenum=rand(0,1000);
 
- $filename=$LoggedUID."_".$filenum;
+
+ 
+
+ if(isset($_POST["Title"]))
+ {
+  $Title=$_POST["Title"];
+  $filename=$LoggedUID."_".$Title;
+  //echo $Title;
+ }
 
 
 
@@ -41,8 +48,35 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
-
-  
+.btns
+{
+width: 50px;
+height: 50px;
+}
+.btns:hover
+{
+  cursor: pointer;
+  transform: scale(1.2); 
+}
+#play
+{
+  float: left;
+  margin-left: 550px;
+  margin-top: 250px;
+}
+#txt
+{
+   margin-top: 260px;
+}
+.btn_grp
+{
+  margin-left: 520px;
+  margin-top: 100px;
+}
+#rec_txt
+{
+margin-left: -70px;
+}
 </style>
 </head>
 <body>
@@ -70,7 +104,20 @@ width :40px;
     </ul>
   </div>
 </nav>
-<button></button>
+
+
+<div class="btn_grp">
+  <p id="rec_txt">
+    Click on the Mic button and start speaking!
+  </p>
+<img src="images/recorder.png" class="btns" id="rec">
+
+<img src="images/tick.png" id='pause_save' class="btns">
+
+</div>
+
+<img src="images/play.png" id='play' class="btns">
+<p id="txt">Play the Recording </p>
 <script>
 
 
@@ -78,61 +125,111 @@ var mic, recorder, soundFile;
 
 var name_to_be_saved= <?php echo json_encode($filename); ?>;
 
-//console.log(userid);
+var rec_btn=document.getElementById("rec");
+var pause_btn=document.getElementById("pause_save");
+var play_btn=document.getElementById("play");
 
-var state = 0; // mousePress will increment from Record, to Stop, to Play
+
+var txt=document.getElementById("rec_txt");
 
 function setup() {
-  createCanvas(400, 400);
-  background(200);
-  fill(0);
-  text('Enable mic and click the mouse to begin recording', 20, 20);
 
+var cnv= createCanvas(300, 200);   
+cnv.position(300, 300);
   
   mic = new p5.AudioIn();
 
-  
   mic.start();
-
+  
   recorder = new p5.SoundRecorder();
 
   recorder.setInput(mic);
 
   soundFile = new p5.SoundFile();
+
 }
 
-function mousePressed() {
+rec_btn.addEventListener("click",record_sound);
 
-  if (state === 0 && mic.enabled) {
+function record_sound() {
+
+ 
+  if (mic.enabled) {
+
+    txt.innerHTML="Recording Has started";
     
     recorder.record(soundFile);
 
-    background(255, 0, 0);
-    text('Recording now! Click to stop.', 20, 20);
-    state++;
-  }
-   else if (state === 1) {
-    recorder.stop(); 
-    background(0, 255, 0);
-    text('Recording stopped. Click to play & save', 20, 20);
-    state++;
-  } 
-  else if (state === 2) {
-    soundFile.play(); 
-    saveSound(soundFile, name_to_be_saved); 
-    state++;
+    console.log("started");
+    
   }
 }
+
+pause_btn.addEventListener("click",pause_save);
+
+  function pause_save() {
+    recorder.stop();  
+    saveSound(soundFile, name_to_be_saved); 
+    txt.innerHTML="Recording is saved successfully";
+    mic.stop();
+
+  }
+
+play_btn.addEventListener("click",play_sound);
+
+  function play_sound(){
+
+    soundFile.play(); 
+    
+    
+  }
+
+
+function draw()
+{
+
+background(255, 255, 255);
+var volume=mic.getLevel();
+
+console.log(volume);
+
+c = color('rgb(0, 229, 6)');
+
+noStroke();
+rect( 250,100, 4,-(10+volume*200), 20, 15, 10, 5);
+fill(c);
+noStroke();
+rect( 260,100, 4, -(20+volume*120), 20, 15, 10, 5);
+fill(c);
+noStroke();
+rect( 270,100, 4, -(40+volume*150), 20, 15, 10, 5);
+fill(c);
+noStroke();
+rect( 280,100, 4, -(20+volume*180), 20, 15, 10, 5);
+fill(c);
+
+
+
+}
+
+
 </script>
 
 
 <?php
 
-$path="C:\backend\htdocs\finalproj\audio_rec".$filename.".wav";
 
-$q="INSERT INTO audio_post VALUES(null,'$LoggedUID','$path')";
+
+
+$path="C:/backend/htdocs/finalproj/audio_rec/".$filename.".wav";
+
+$q="INSERT INTO audio_post VALUES(null,'$LoggedUID','$Title','$path')";
 
 mysqli_query($conn,$q);
+
+
+
+
 
 ?>
 

@@ -7,18 +7,24 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
+$profile =get_user($LoggedUID);
 
 
-$user =get_user($LoggedUID);
- $profile_pic_url=$user["profilepic"];
+$profile_pic_url=$profile["profilepic"];
 
- if(isset($_GET["place"]))
- {
-  $place_to_be_shown=mysqli_real_escape_string($conn,$_GET["place"]);
- }
+ if(isset($_GET["C_ID"]))
+{
+$c_id=mysqli_real_escape_string($conn,$_GET["C_ID"]);
+}
 
+else {
+$c_id=0;
+}
 
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,6 +32,8 @@ $user =get_user($LoggedUID);
   <meta name="keywords" content="cooking,recipes,food">
   <meta name="description" content="recipe sharing platform">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="odometer-theme-car.css" />
+<script type="text/javascript" src="odometer.js"></script>
 
 <style>
   
@@ -36,41 +44,27 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
-
 .post{
       
-      height:280px;
-      width:700px;
-      border-radius: 6px;
+      height:50px;
+      width:400px;
+      border-radius: 4px;
       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-     margin-bottom: 25px;
-
-      
+     margin-bottom: 25px;    
 }
 .post_pic{
     width: 200px;
-    height: 197px;
+    height: 200px;
     border-radius: 6px;
     float: left;
     margin-right: 30px;
     margin-left: 30px;
 }
-  .tag_cover
+.wall
 {
-  background:#ff3333;
-  border-radius: 3px;
-  width: 45%;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 3px;
-  height:23px;
-  margin-right: 2px;
+  margin-left: 400px;
 }
-.everything
-{
-  margin-left: 300px;
-  margin-top: 100px;
-}
+  
 </style>
 </head>
 <body>
@@ -80,8 +74,9 @@ width :40px;
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-       <li class="nav-item">
+      <ul class="navbar-nav">
+    
+     <li class="nav-item">
         <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
       &nbsp 
@@ -94,122 +89,82 @@ width :40px;
       <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
       </li>
+        
     </ul>
   </div>
 </nav>
 
-<div class="everything">
-
-<?php
-
-$q3="SELECT * FROM post_data WHERE Origin IS NOT NULL";
-
-$list=give($q3);
-
-foreach ($list as $item) {
-
-
-
-
-if($place_to_be_shown==$item["Origin"])
-{
-
-  $id_of_poster=$item["U_ID"];
-
-$posted_by=get_user($id_of_poster);
-$posted_by_url=$posted_by["profilepic"];
-$profile_pic_name=$posted_by["Name"];
- 
-
- $id=$item["Post_Pic"];
- $post_pic_url=get_pic($id);
-
- ?>
-
-<div class="post"> 
-
-<img src="<?php echo $posted_by_url; ?>" class="profilepic"> 
-<span><h4> <?php echo $profile_pic_name; ?></h4></span>
-<br>
- <img src="<?php echo $post_pic_url; ?>" class="post_pic"> 
-  
 <h3>
-<?php
- echo nl2br($item["Title"]."\n");
- ?>
-  </h3>
-<p id="date_pos">
   <?php
-  $t=date($item["Timestamp"]);
-  $curr_time=date("Y-m-d H:i");
-  $mt=$curr_time+$t;
+  $q3="SELECT* FROM comp_data WHERE Contest_Id='$c_id'";
 
-
-  //echo $curr_time;
-
-echo nl2br($t."\n");
+  $data=give_unique($q3);
+  
+   echo $data["Title"];
 
   ?>
+</h3>
+<!--<a href="invitepeople.php?C_ID=<?php //cho $c_id;?>">
+  Invite People to Join this Contest
+</a>
+-->
 
-</p>
+<div class="wall">
+<?php 
+$q2="SELECT* FROM post_data WHERE C_ID='$c_id'";
+$list=give($q2);
+$count=sizeof($list);
+?>
+<div id="count" class="odometer">
+  </div>
+
+<?php
+
+foreach ($list as $post)  {
+  ?>
+<div class="post">
+  <?php
+  echo nl2br($post["Title"]."  ");
+?>
+&nbsp &nbsp &nbsp &nbsp &nbsp
+<?php
+  //echo nl2br($post["Description"]."\n");
+
+  $submitted_by=get_user($post["U_ID"]);
+
+  echo nl2br("Submitted_by"." ".$submitted_by["Name"]."  ");
+
+  $current_rec_id=$post["P_ID"];
+
+  ?>
   
-<span class="content">
-<?php
- echo nl2br($item["Description"]."\n");
-
-echo nl2br("Serves".$item["Serves"]."\n");
-
-echo nl2br("Local to"." ".$item["Origin"]."\n");
-
- 
-
-$current_rec_id=$item["P_ID"];
-
-
-
-?>
-<?php
-  $array_tags = array_filter(explode (",", $item["Tags"])); 
-    foreach($array_tags as $tag_v)
-    {
-          ?>
-          <span class="tag_cover">
-       <!-- <a href="<?php echo nl2br ("#"."$tag_v"); ?>"><?php echo nl2br ("$tag_v"); ?>  </a>-->
-       <a href="searchbytag.php?tag_name=<?php echo nl2br ("$tag_v"); ?>"><?php echo nl2br ("$tag_v"); ?>  </a>
-
-        </span>
-<?php
-}
-?>
-</span>
-<br><br><br>
-<div style="margin-left: 550px;margin-top: -30px;">
+  <span style="margin-left: 50px;margin-top: -30px;">
   <a href="displayrecipe.php?ID=<?php echo $current_rec_id ;?>">
 View Full Recipe
 </a>
+</span>
 </div>
-</div>
 
-
- <?php
-
+  <?php
 }
-
-unset($arra);
-}
-
-
 
 ?>
-
 </div>
 
+<script type="text/javascript">
+  var c=document.getElementById("count");
+  
+  setTimeout(function(){ 
 
+    var number = <?php echo json_encode($count); ?>;
+    console.log(number);
+    c.innerHTML = number;
+}, 10);
 
+</script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
-
-
+</html>

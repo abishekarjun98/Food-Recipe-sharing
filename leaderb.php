@@ -7,11 +7,7 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
-
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
-
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+ $user=get_user($LoggedUID);
 
  $profile_pic_url=$user["profilepic"];
 
@@ -88,11 +84,13 @@ margin-top: 50px;
 
 <?php
 $timestamp = date("m");
-$q2="SELECT* FROM post_data WHERE MONTH(Timestamp)='$timestamp' ORDER BY Flames DESC";
-$res2=mysqli_query($conn,$q2);
-$posts=mysqli_fetch_all($res2,MYSQLI_ASSOC);
 
+
+$q2="SELECT* FROM post_data WHERE MONTH(Timestamp)='$timestamp' ORDER BY Flames DESC";
+
+$posts=give($q2);
 $count=1;
+
 foreach ($posts as $post) {
 
 if($count<11)
@@ -114,10 +112,7 @@ $curr_post_id=$post["P_ID"];
 <?php
 $owner=$post["U_ID"];
 
-$q3="SELECT * FROM Userinfo WHERE ID='$owner'";
-
-$res3=mysqli_query($conn,$q3);
-$user=mysqli_fetch_array($res3,MYSQLI_ASSOC);
+$user=get_user($owner);
 ?>
 <td>  <?php echo $user["Name"]; ?></td>
 <td>  <?php echo $post["Flames"]; ?></td>

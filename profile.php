@@ -24,10 +24,8 @@ else
 
 }
 
-$q3="SELECT * FROM Userinfo WHERE ID='$id_tobe_shown'";
+$userf=get_user($id_tobe_shown);
 
-$res3=mysqli_query($conn,$q3);
- $userf=mysqli_fetch_array($res3, MYSQLI_ASSOC);
  $profile_pic_url=$userf["profilepic"];
  $name=$userf["Name"];
  $bio=$userf["Bio"];
@@ -57,9 +55,7 @@ $num_ings=mysqli_num_rows($res_ings);
 
 
 
-$q0="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
-$res0=mysqli_query($conn,$q0);
- $user0=mysqli_fetch_array($res0, MYSQLI_ASSOC);
+ $user0=get_user($LoggedUID);
  $profile_pic_url_0=$user0["profilepic"];
 
 
@@ -302,7 +298,6 @@ if(isset($_POST["Bio"]))
     }
 
 }
-
 
 ?>
 

@@ -6,10 +6,7 @@ require 'db.php';
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
-$q1="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
-
-$res=mysqli_query($conn,$q1);
- $user=mysqli_fetch_array($res, MYSQLI_ASSOC);
+$user=get_user($LoggedUID);
  $profile_pic_url=$user["profilepic"];
 
 
@@ -119,21 +116,20 @@ width :40px;
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-    <li class="nav-item">
-        <img src="<?php echo $profile_pic_url ?>" class="profilepic">
+   <ul class="navbar-nav">
+    
+     <li class="nav-item">
+        <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
-      <li class="nav-item active">
+      &nbsp 
+      <li class="nav-item">
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="profile.php">Profile</a>
-      </li>
-       <li class="nav-item">
-        <a class="nav-link" href="index.php">Log-out</a>
-      </li>
            <li class="nav-item">
-        <a class="nav-link" href="friends.php">Connect</a>
+        <a class="nav-link" href="friends.php">Search</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="index.php">Log-out</a>
       </li>
         
     </ul>
@@ -157,9 +153,9 @@ width :40px;
 <?php
 
 $q2="SELECT * FROM Userinfo WHERE ID!='$LoggedUID'";
+$users=give($q2);
 
-$res=mysqli_query($conn,$q2);
- $users=mysqli_fetch_all($res, MYSQLI_ASSOC);
+
 $len=sizeof($users);
 
  ?>
@@ -178,9 +174,9 @@ i++;
   
   $a_id=$user["ID"];
 $q4="SELECT * FROM followers_data WHERE user2_id='$a_id' AND user1_id='$LoggedUID'";
-
 $res2=mysqli_query($conn,$q4);
- $fuser=mysqli_num_rows($res2);
+ $fuser=mysqli_num_rows($res2);   
+
  echo "$fuser";
 ?>
 
@@ -193,16 +189,16 @@ node.setAttribute("class","People_class");
         fimg.setAttribute("class","profilepic");
         node.appendChild(fimg);
         var b=document.createElement('a');
-        var link = document.createTextNode("<?php echo $user["Name"]; ?>");
-        b.title="<?php echo $user["Name"]; ?>";
+        var link = document.createTextNode("<?php echo nl2br($user["Name"]); ?>");
         b.appendChild(link);   
         b.href = 'profile.php?f_ID=<?php echo nl2br($user["ID"]); ?>';
         b.setAttribute("class","b_linkclass");
         node.appendChild(b);  
-        
-        //var bio_node=document.createTextNode("<?php //echo $user["Bio"]; ?>")
+        var brk=document.createElement("BR");
+        node.appendChild(brk);
+      var bio_node=document.createTextNode("<?php echo $user["Bio"]; ?>")
 
-      //  node.appendChild(bio_node);
+        node.appendChild(bio_node);
 
 
 
@@ -234,11 +230,6 @@ var a = document.createElement('a');
 <?php
  }
 ?>
-
-
-
-                
-
 
 
 node.appendChild(a);
@@ -350,21 +341,16 @@ echo '<script>alert("Un followed")</script>';
 
 $q_posts="SELECT* FROM post_data ";
 
-$res_posts=mysqli_query($conn,$q_posts);
-$list_posts=mysqli_fetch_all($res_posts,MYSQLI_ASSOC);
+$list_posts=give($q_posts);
 
-//print_r($list_posts);
 
 foreach ($list_posts as $post) {
   
- // echo $post["Title"];
- $id=$post["Post_Pic"];
-$qpic="SELECT * FROM pic_data WHERE Pic_id='$id'";
+  $id=$post["Post_Pic"];
 
-$respic=mysqli_query($conn,$qpic);
- $post_picture=mysqli_fetch_array($respic, MYSQLI_ASSOC);
+ 
 
- $pic_url=$post_picture["Location"];
+ $pic_url=get_pic($id);
 
 ?>
 
