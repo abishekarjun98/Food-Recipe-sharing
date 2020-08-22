@@ -7,6 +7,29 @@ require 'db.php';
 
 
 
+
+$locs=array();
+
+if (isset($_FILES['my_file'])) {
+                $myFile = $_FILES['my_file'];
+                $fileCount = count($myFile["name"]);
+
+                for ($i = 0; $i < $fileCount; $i++) {
+        
+
+
+$rand= uniqid();
+$info = pathinfo($myFile["name"][$i]);
+$ext = $info['extension']; 
+$newname = $rand.".".$ext;
+$target = 'uploads/postpics/'.$newname;
+move_uploaded_file( $_FILES['my_file']["tmp_name"][$i], $target);
+array_push($locs,$target);
+
+                }
+  print_r($locs);
+            }
+
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
@@ -20,14 +43,17 @@ $res=mysqli_query($conn,$q1);
 
 
 
-$l_id=$_SESSION["Latest_pic"];
+//$l_id=$_SESSION["Latest_pic"];
 
+/*
 $q2="SELECT * FROM pic_data WHERE Pic_id='$l_id'";
 
 $res2=mysqli_query($conn,$q2);
  $pic=mysqli_fetch_array($res2, MYSQLI_ASSOC);
 
- $pic_url=$pic["Location"];
+ */
+
+ $pic_url=$target;
 
 
 if(isset($_POST["tag"]))
@@ -226,16 +252,22 @@ echo nl2br ("Serves"." $serves\n");
  $f=0;
  $def_id=0;
 
+$new_id=$_SESSION["newpost_id"];
 
+$post_picture=$locs[0];
 
+$steps_pics=array_slice($locs,1);
 
-  $q3="INSERT INTO post_data VALUES(null,'$c_id','$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values', '$origin','$l_id','$f',CURRENT_TIMESTAMP())";
+$steps_locs=implode(",",$steps_pics);
+
+  $q3="INSERT INTO post_data VALUES('$new_id','$c_id','$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values','$origin','$post_picture','$f',CURRENT_TIMESTAMP(),'$steps_locs')";
 
 
 
 
 if(mysqli_query($conn, $q3))
 {
+
   $last_id = mysqli_insert_id($conn);
   
 $q_flame="INSERT INTO flame_data VALUES('$last_id','$f')";
@@ -243,6 +275,12 @@ if(mysqli_query($conn, $q_flame))
 {
   echo '<script>alert("Recipe Posted Successfully")</script>';
 }
+
+}
+else
+{
+  
+  echo "Error: " . $q3 . "<br>" . $conn->error;
 
 }
 
