@@ -32,30 +32,16 @@ $q2="SELECT * FROM post_data WHERE P_ID='$ID_to_be_displayed'";
 $the_post=give_unique($q2);
 $id=$the_post["Post_Pic"];
 
-
+$steps_string=$the_post["steps_pic"];
 
 
   
- $post_pic_url=get_pic($id);
+ //$post_pic_url=get_pic($id);
 
-
-  $q4="SELECT * FROM flame_data WHERE P_ID='$ID_to_be_displayed'";
+$q4="SELECT * FROM flame_data WHERE P_ID='$ID_to_be_displayed'";
   $curr=give_unique($q4);
    $oldflames=$curr["Flames"];
-
   
-
-if(isset($_GET['flame'])) {
-    
-    $newflames=$oldflames+1;
-    echo $newflames;
-
-  $q5="UPDATE flame_data SET Flames='$newflames' WHERE  P_ID='$ID_to_be_displayed'";
-
-  mysqli_query($conn,$q5);
-  header("Location:displayrecipe.php?ID="."$ID_to_be_displayed");
-
-  }
 
 
 
@@ -73,8 +59,26 @@ if(isset($_GET['flame'])) {
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v8.0" nonce="4P9EzdVY"></script>
  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+ <script src="flameupdate.js" type="text/javascript" charset="utf-8" async defer></script>
 <style>
- 
+.send_btn
+{
+  float: right;        
+  width:30px;
+  height:30px;
+  margin-right: 5px;
+}
+
+.post_pic{
+
+   
+    margin-left: -50px;
+  
+}
+.send_btn:hover
+{
+cursor: pointer;
+} 
   #tw
 {
 
@@ -84,7 +88,9 @@ margin-top: 100px;
 #fb
 {
   float: right;
-  margin-top: -100px;
+  margin-right: -61px;
+  margin-top: 122px;
+
 }
   .fa {
     margin-top: -240px;
@@ -121,6 +127,11 @@ margin-top: 100px;
   cursor: pointer;
   transform: scale(1.3); 
 
+  }
+  .carousel-inner{
+
+    width: 400px;
+    height: 300px;
   }
 
 
@@ -233,7 +244,47 @@ else if(mysqli_num_rows($res9)==0)
 
 <div class="post_content" >
 
-<img src="<?php echo $post_pic_url ?>" class="post_pic">
+<!--<img src="<?php //echo $post_pic_url ?>" class="post_pic">-->
+<div id="carouselExampleControls"  class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+<div class="carousel-item active ">
+      <img style="height: 300px;width: 400px;" src=<?php echo $id; ?>>
+    </div>
+<?php 
+  $steps_pics_array = explode (",", $steps_string);
+         $array_3 = array_filter($steps_pics_array);
+         
+       foreach($array_3 as $field_value){
+        
+
+        ?>
+        <div class='carousel-item'>
+    <img style="height: 300px;width: 400px;" src= <?php echo $field_value; ?>>
+    </div>
+
+        <?php
+        
+        
+     }?>
+
+ <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+    
+    
+  </div>
+</div>
+
+
+
+
+
+
 
   <div id="tw">
 <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button"  data-text="Check out this Recipe!!!<?php echo $the_post["Title"] ?>  via recipe.com"
@@ -251,10 +302,10 @@ else if(mysqli_num_rows($res9)==0)
 
 
 
-<a href='displayrecipe.php?flame=true'>
-  <img src="images/flame.png" class="flame">
-</a>
+  <img src="images/flame.png" class="flame" onclick="getdata()">
+<span id="flamecount">
 <?php echo $oldflames; ?>
+</span>
 
 &nbsp
 
@@ -269,8 +320,8 @@ echo sizeof($comm);
 
  &nbsp &nbsp
 
- <i id="bookmark-toggle" onclick="myFunction(this)" class="fa fa-bookmark-o"></i>
- <br> <br>
+ <!--<i id="bookmark-toggle" onclick="myFunction(this)" class="fa fa-bookmark-o"></i>-->
+ <br><br>
 <img src="images/speaker.png" id='btnSpeak' class="play">
 &nbsp &nbsp
 
@@ -375,6 +426,12 @@ echo "Serves".$the_post['Serves'];
 <div id="comment_text"><h3>Comments</h3></div>
  <div id="comment_section">
 
+
+<!--
+  <input type="text" name="commenti" placeholder="Leave a suggestion" class="comment_box" id="entered_comment">
+
+  <img src="images/send.png" class="send_btn" onclick="postdata()">
+-->
 
 <form method="POST" action="add_comment.php" id="commentbox">
   <input type="text" name="commenti" placeholder="Leave a suggestion" class="comment_box">

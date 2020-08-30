@@ -135,7 +135,7 @@ $profile_pic_name=$posted_by["Name"];
 <img src="<?php echo $posted_by_url; ?>" class="profilepic"> 
 <span><h4> <?php echo $profile_pic_name; ?></h4></span>
 <br>
- <img src="<?php echo $post_pic_url; ?>" class="post_pic"> 
+ <img src="<?php echo $id ?>" class="post_pic"> 
   
 <h3>
 <?php

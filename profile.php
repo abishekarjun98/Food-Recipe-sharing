@@ -5,7 +5,7 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
-$_SESSION["flag"]=1;
+//$_SESSION["flag"]=1;
 $t= date("m");
 
 
@@ -74,11 +74,11 @@ $num_recipes=mysqli_num_rows($res_badge);
 if(date("d")==31 &&date("m")==$t)
 {
 
-if($num_recipes>=15)
+if($num_recipes>=10)
 {
   $curr_gbadges++;
 }
-else if($num_recipes>8 && $num_recipes<15 )
+else if($num_recipes>5 && $num_recipes<10 )
 {
   $curr_sbadges++;
 }
@@ -163,10 +163,14 @@ width :200px;
     margin-left:  100px;
 }
 .pen{
-    width: 30px;
-    height: 30px;
-    margin-top:15px; 
+    width: 20px;
+    height: 20px;
     margin-left: 5px;
+}
+.pen:hover
+{
+  cursor: pointer;
+  transform: scale(1.1);
 }
 .bio{
     margin-left: 100px;
@@ -182,8 +186,8 @@ width :40px;
   
 .bdgs
 {
-  height: 30px;
-  width: 30px;
+  height: 20px;
+  width: 20px;
 }
 .badge{
   margin-left: 130px;
@@ -235,10 +239,15 @@ width :40px;
 </label>
   <input type="image" src="images/uploadpic.png" alt="Submit" class="btn_u">
 </form>
-<form action="profile.php" method="post" >
-    <input type="text"name="Bio" placeholder="<?php echo $bio ?>"class ="bio">
-    <input type="image" src="images/pen.png" alt="Submit" class="pen" onclick="reload()">
-</form>
+<p style="text-align: center;"><?php echo $bio; ?>
+  <img src="images/pen.png" class="pen" data-toggle="modal" data-target="#Modal_1">
+</p>
+<span>
+
+</span>
+
+
+
 </div>
 <div class="badge">
 <?php echo $curr_gbadges; ?><img src="images/gold.png" class="bdgs">&nbsp
@@ -246,13 +255,34 @@ width :40px;
 <?php echo $curr_bbadges;?><img src="images/bronze.png" class="bdgs">
 </div>
 <br>
-<div align="center">
-<a href="display_people.php?a_ID=<?php echo $id_tobe_shown; ?>"><?php echo "Following".$num_ers; ?> </a>
+<div style="margin-left: 110px;">
+  
+</style>
+<a href="display_people.php?a_ID=<?php echo $id_tobe_shown; ?>"><?php echo "Following"." ".$num_ers; ?> </a>
 
-&nbsp &nbsp
+&nbsp
 
-<a href="display_people.php?b_ID=<?php echo $id_tobe_shown; ?>"><?php echo "Follwers".$num_ings;?> </a>
+<a href="display_people.php?b_ID=<?php echo $id_tobe_shown; ?>"><?php echo "Follwers"." ".$num_ings;?> </a>
 </div>
+</div>
+<div class="modal fade-modal-lg" id="Modal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalLabel">Fill in the Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="add_bio.php" method="post" style="margin-left:150px;">
+    <input type="text"name="Bio" placeholder="enter">
+    <br><br>
+    <input type="submit" class=" btn btn-warning" style="margin-left:50px;">
+    </form>
+       
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -272,10 +302,6 @@ forms.style.display="none";
 f_bio.style.display="block";
 }
 
-function reload()
-{
-    location.reload();
-  }
 
 </script>
 
@@ -285,23 +311,4 @@ function reload()
 
 </body>
 </html>
-<?php
-
-if(isset($_POST["Bio"]))
-{
-    $Bio=$_POST["Bio"];
-    $q2= "UPDATE Userinfo SET Bio='$Bio' WHERE ID='$LoggedUID' ";
-    if(mysqli_query($conn,$q2))
-    {
-      echo '<script>alert("Bio Updated Successfully")</script>'; 
-
-    }
-
-}
-
-?>
-
-
-
-
 

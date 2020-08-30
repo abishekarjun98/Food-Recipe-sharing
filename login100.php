@@ -26,10 +26,6 @@ if(isset($_POST['name'])||isset($_POST["password"]))
   $user=mysqli_fetch_array($result, MYSQLI_NUM);
 
 
-  //echo $user;
- // $AID = mysqli_fetch_array($resultid, MYSQLI_NUM);
-
-
   if($rows==1)
   {
     

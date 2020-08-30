@@ -32,8 +32,9 @@ $c_id=0;
   <meta name="keywords" content="cooking,recipes,food">
   <meta name="description" content="recipe sharing platform">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="odometer-theme-car.css" />
-<script type="text/javascript" src="odometer.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 <style>
   
@@ -47,7 +48,7 @@ width :40px;
 .post{
       
       height:50px;
-      width:400px;
+      width:500px;
       border-radius: 4px;
       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
      margin-bottom: 25px;    
@@ -63,6 +64,12 @@ width :40px;
 .wall
 {
   margin-left: 400px;
+}
+
+#form
+{
+  margin-left:450px;
+
 }
   
 </style>
@@ -94,20 +101,60 @@ width :40px;
   </div>
 </nav>
 
-<h3>
+
+
+
+
+<form method="POST" id="form" action="viewsubmissions.php?C_ID=<?php echo $c_id;?> ">
+<h4 style="margin-left:130px;">
   <?php
   $q3="SELECT* FROM comp_data WHERE Contest_Id='$c_id'";
 
   $data=give_unique($q3);
   
-   echo $data["Title"];
+   echo nl2br($data["Title"]."\n");
+   ?>
+ </h4>
+
+<input type="text" name="Winner">
+<input type="submit" value="Declare Winner">
+  </form>
+   <div style="margin-left:600px; margin-top:70px; margin-bottom:50px;">
+ <?php
+
+   echo "Winner - "." ".$data["Winner"];
 
   ?>
-</h3>
-<!--<a href="invitepeople.php?C_ID=<?php //cho $c_id;?>">
-  Invite People to Join this Contest
-</a>
--->
+</div>
+
+
+
+<?php
+if(strcmp($data["Winner"],"Yet to be Announced"))
+{
+  $name=$data["Winner"];
+
+  $q="SELECT* FROM  post_data WHERE Title='$name'";
+
+  $res=give_unique($q);
+  $winner_uid=$res["U_ID"];
+
+  $q_message="INSERT INTO Messaage(Reciever) VALUES('$winner_uid')";
+
+  mysqli_query($conn,$q_message);
+
+  $q_gold="UPDATE userinfo SET goldb=goldb+1  WHERE ID='$winner_uid'";
+  if (mysqli_query($conn,$q_gold)) {
+    # code...
+  }
+  else{
+    echo "Error: " . $q_gold . "<br>" . $conn->error;
+  }
+  
+}
+
+?>
+
 
 <div class="wall">
 <?php 
@@ -115,10 +162,10 @@ $q2="SELECT* FROM post_data WHERE C_ID='$c_id'";
 $list=give($q2);
 $count=sizeof($list);
 ?>
-<div id="count" class="odometer">
-  </div>
+
 
 <?php
+
 
 foreach ($list as $post)  {
   ?>
@@ -151,17 +198,32 @@ View Full Recipe
 ?>
 </div>
 
-<script type="text/javascript">
-  var c=document.getElementById("count");
+
+<?php
+
+if(isset($_POST["Winner"]))
+{
+$winner=$_POST["Winner"];
   
-  setTimeout(function(){ 
+    $q10= "UPDATE comp_data SET Winner='$winner' WHERE Contest_ID='$c_id'";
+    if(mysqli_query($conn,$q10))
+    {
+      echo '<script>alert("Winner Declared")</script>';
+      header("Location:viewsubmissions.php?C_ID="."$c_id"); 
 
-    var number = <?php echo json_encode($count); ?>;
-    console.log(number);
-    c.innerHTML = number;
-}, 10);
+    }
+    else
+    {
+      echo "Error: " . $q10 . "<br>" . $conn->error;
+    }
+}
 
-</script>
+?>
+
+
+
+
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

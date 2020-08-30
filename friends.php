@@ -107,7 +107,8 @@ width :40px;
 }
 #more
 {
-  margin-left: 550px;
+  margin-left: 340px;
+  width:36%;
 }
 </style>
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
@@ -145,8 +146,8 @@ width :40px;
 <ul id="People"></ul>
 
 </div>
-<a id="more" class="btn btn-warning" href="findrecipes.php" type="button"  data-toggle="tooltip" data-placement="top" title="Click here to find More Recipes from the Web">
-  More Recipes</a>
+<a id="more" class="btn btn-warning" href="webrecipe.php" type="button"  data-toggle="tooltip" data-placement="top">
+  Get Best Recipes from Web!</a>
 
 <body>
 
@@ -364,7 +365,7 @@ foreach ($list_posts as $post) {
   post_node.setAttribute("class","Post_class");
 
    var pimg = document.createElement("IMG");
-        pimg.setAttribute("src","<?php echo $pic_url?>");
+        pimg.setAttribute("src","<?php echo $id?>");
         pimg.setAttribute("class","post_pic_class");
         post_node.appendChild(pimg);
 

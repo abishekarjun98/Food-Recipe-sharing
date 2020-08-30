@@ -16,6 +16,8 @@ $user=get_user($LoggedUID);
 
  $curr_recipe=$_SESSION["curr_POST"];
 
+ 
+
  if(isset($_POST["commenti"]))
  {
   
@@ -27,9 +29,9 @@ $user=get_user($LoggedUID);
 
   if(mysqli_query($conn,$q2))
 {
-  header("Location:displayrecipe.php");
+	 header("Location:displayrecipe.php?ID=".$curr_recipe);
+	 
 }
-
  }
 
 

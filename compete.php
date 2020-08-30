@@ -1,9 +1,6 @@
 
-
 <?php
-
-
-
+    
 session_start();
 require 'db.php';
 
@@ -27,7 +24,11 @@ $profile_pic_url=$profile["profilepic"]
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  
+  .bdgs
+{
+  heig0px;
+  width: 10px;
+}
 .profilepic
 {
 width :40px;
@@ -109,7 +110,7 @@ z-index: 999999;
   </button>
 <br>
 <div class="btn_grp" style="margin-left: 650px; margin-top: 25px;margin-bottom: 30px;">
-<button id="my_btn" class="btn btn-outline-primary active"> 
+<button id="my_btn" class="btn btn-outline-primary"> 
 My Contests
 </button>
 <button id="active_btn" class="btn btn-outline-primary"> 
@@ -123,21 +124,24 @@ Active Contests
   $res3=mysqli_query($conn,$q3);
   $posts=mysqli_fetch_all($res3,MYSQLI_ASSOC);
   foreach ($posts as $post) {
-    ?>
+
+    ?>  
 <div class="post">
   <h4><?php echo $post["Title"]; ?>
-  </h4><br>
+  </h4>
   <?php echo $post["Description"]; ?><br>
   <?php echo $post["Start_date"]; ?>
   &nbsp &nbsp &nbsp
   <?php echo $post["End_date"]; ?><br>
-
+  <br><br>
+  
+ 
   <a href="viewsubmissions.php?C_ID=<?php echo $post['Contest_Id']; ?>">View Submissions</a>
 
 </div>
 
-    <?php
-  }
+<?php  
+}
   ?>
 </div>
 
@@ -151,11 +155,14 @@ Active Contests
 <div id="Active">
   <?php
 
-  $curr_date=date("d-m-Y");
+  $curr_date=date("Y-m-d");
   $q4="SELECT* FROM comp_data WHERE '$curr_date'< End_date ";
   $res4=mysqli_query($conn,$q4);
   $posts=mysqli_fetch_all($res4,MYSQLI_ASSOC);
  foreach ($posts as $posti) {
+
+    $Host=$posti["Hosted_by"];
+    $host_name=get_user($Host);
     ?>
 <div class="post">
   <h4>
@@ -168,12 +175,25 @@ Active Contests
   &nbsp &nbsp &nbsp
   <?php echo $posti["End_date"]; ?>
   <br>
-  <a href="addrecipe2.php?C_ID=<?php echo $posti['Contest_Id'];?> ">Submit your Recipe</a>
-</div>
+  <?php echo "Hosted by"." ".$host_name["Name"] ?>
+  <br>
+  <?php echo "Winner"." ".$posti["Winner"]; ?>
+  <br>
+ <?php 
+if(!(strcmp($posti["Winner"],"Yet to be Announced")))
+{  ?>
 
+  <a href="addrecipe2.php?C_ID=<?php echo $posti['Contest_Id'];?> ">Submit your Recipe</a>
     <?php
   }
-  ?>
+  else{
+    echo "Sorry not accepting Submissions";
+  }
+?>
+</div>
+<?php 
+}
+?>
 </div>
 </div>
 
@@ -193,6 +213,9 @@ Active Contests
         <form action="createcontest.php" method="POST">
           <input type="text" name="Title" placeholder="Title of the Competition">
           <br><br>
+          <p>* Minimum 1<img src="images/gold.png" class="bdgs">/
+            2<img src="images/silver2.png" class="bdgs">/
+            3<img src="images/bronze.png" class="bdgs"> Required</p>
           <input type="text" name="description" placeholder="Description/Rules" id="d_box">
            <br><br> <br>
           <label for="Start_date">
@@ -215,6 +238,8 @@ Active Contests
   </div>
 </div>
 <script>
+
+
 
   $("#My").show();
   $("#Active").hide();

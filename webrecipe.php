@@ -1,18 +1,17 @@
-
 <?php
-
-include 'db.php';
 session_start();
+require 'db.php';
+
 $LoggedUID= $_SESSION["LoggedUID"];
 
 
 
-$user =get_user($LoggedUID);
- $profile_pic_url=$user["profilepic"];
+$profile =get_user($LoggedUID);
+
+$profile_pic_url=$profile["profilepic"];
 
 
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -33,6 +32,7 @@ $user =get_user($LoggedUID);
 			margin-top: 50px;
 			margin-left: 450px;
 			padding-left: 50px;
+      border-radius: 10px;
 
 	}
 	body
@@ -72,14 +72,22 @@ width :40px;
   top:-5px;
   right: 1px;
 }
+.everything{
+  margin-left: 480px;
+}
+#img{
+  width: 400px;
+  height: 300px;
+}
 </style>
+
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
+      <ul class="navbar-nav">
     
      <li class="nav-item">
         <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
@@ -89,7 +97,7 @@ width :40px;
         <a class="nav-link" href="openpage.php">Home <span class="sr-only">(current)</span></a>
       </li>
            <li class="nav-item">
-        <a class="nav-link" href="friends.php">Search Friends,Recipes</a>
+        <a class="nav-link" href="friends.php">Search</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="index.php">Log-out</a>
@@ -100,91 +108,77 @@ width :40px;
 </nav>
 
 
-
 </head>
 <body>
+<br><br>
 
-<div id="loader">
-	<img src="images/donut.png"/>
-</div>
+<div class="everything">
 <p>
 Find Best Recipes across the Web
 </p>
-<form id="myForm" action="findrecipes.php" method="POST">
-   <input type="text" name="fname" placeholder="Enter the Ingredients which you have"  size= "50" style = "height: 50px" ><br>
-  <input type="submit" value="Submit">
-</form> 
+
+   <input type="text" name="fname" id="query" size="30px" placeholder="Enter Ingredients....">
+   
+  <button id="enter" onclick="gettext()" class="btn btn-warning">
+   Search
+  </button> 
+</div>
+
 
 
 <div id="content">
 </div>
+<img src="images/food.png" style="margin-left: 450px;" id="img">
+<script type="text/javascript">
+  
+
+function gettext()
+{
+  var input=document.getElementById("query").value;
+
+  console.log(input);
+
+var url=" https://www.googleapis.com/customsearch/v1?key=AIzaSyCeOsf_ZutZPxiRMTeBHeQcZzGiiteSnX8&cx=008767739067013867662:qovos-gsxu8&q="+input;
+
+   getdata(url);
+ 
+
+} 
 
 
-<?php
+var img=document.getElementById("img");
+img.style.display="block";
 
-if(isset($_POST["fname"]))
-{//background: url('images/pizza.png') 50% 50% no-repeat rgb(249,249,249); 
-
-	$fname=$_POST["fname"];
-
-
-	$q1="INSERT INTO find_recipes values(null,'$fname')";
-
-	$conn->query($q1);
-}
-
-
-$last_id = mysqli_insert_id($conn);
-
-$q2="SELECT * FROM find_recipes WHERE entry_id='$last_id'";
-
-$res=mysqli_query($conn,$q2);
-
-$foodname=mysqli_fetch_array($res,MYSQL_ASSOC);
-
-
-
-?>
-
-
-</body>
-
-<script>
-
-	var foodquery = <?php echo json_encode($foodname["entry_content"]); ?>;
-	
-
-var url=" https://www.googleapis.com/customsearch/v1?key=AIzaSyCeOsf_ZutZPxiRMTeBHeQcZzGiiteSnX8&cx=008767739067013867662:qovos-gsxu8&q="+foodquery;
-
-async function getdata()
+async function getdata(url)
 {
 
+img.style.display="none";
 const response=await fetch(url);
 const json=await response.json();
 
 for (var i = 0; i<5 ; i++)
  {
-	
-		var title = document.createElement("H3");
-		title.innerHTML = json.items[i].title;                
-		document.getElementById("content").appendChild(title);
+  
+    var title = document.createElement("H3");
+    title.innerHTML = json.items[i].title;                
+    document.getElementById("content").appendChild(title);
 
-		var descp = document.createElement("P");
-		descp.innerHTML = json.items[i].snippet;                
-		document.getElementById("content").appendChild(descp);
-
-
-
-	  		var fimg = document.createElement("IMG");
-  			fimg.setAttribute("src", json.items[i].pagemap.cse_thumbnail[0].src);
-			document.getElementById("content").appendChild(fimg);
-
-	  			
-				linebreak = document.createElement("br");
-				document.getElementById("content").appendChild(linebreak);
+    var descp = document.createElement("P");
+    descp.innerHTML = json.items[i].snippet;                
+    document.getElementById("content").appendChild(descp);
 
 
-	  			var a = document.createElement('a'); 
+
+        var fimg = document.createElement("IMG");
+        fimg.setAttribute("src", json.items[i].pagemap.cse_thumbnail[0].src);
+      document.getElementById("content").appendChild(fimg);
+
+          
+        linebreak = document.createElement("br");
+        document.getElementById("content").appendChild(linebreak);
+
+
+          var a = document.createElement('a'); 
                 var link = document.createTextNode("View Full Recipe");
                 a.appendChild(link);   
                 a.title = "View Full Recipe"; 
@@ -194,16 +188,8 @@ for (var i = 0; i<5 ; i++)
                          
 }
 }
- getdata();
-  $(window).load(function() {  
-      $("#loader").fadeOut(1000);  
-   });
 
 
-
- 
 </script>
-
+</body>
 </html>
-
-

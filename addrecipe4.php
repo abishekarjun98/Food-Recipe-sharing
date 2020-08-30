@@ -6,29 +6,23 @@ session_start();
 require 'db.php';
 
 
-
+$rand= uniqid();
 
 $locs=array();
 
-if (isset($_FILES['my_file'])) {
-                $myFile = $_FILES['my_file'];
-                $fileCount = count($myFile["name"]);
-
-                for ($i = 0; $i < $fileCount; $i++) {
-        
-
-
-$rand= uniqid();
-$info = pathinfo($myFile["name"][$i]);
+if(isset($_FILES["fileToUpload"]))
+{
+$info = pathinfo($_FILES['fileToUpload']['name']);
 $ext = $info['extension']; 
-$newname = $rand.".".$ext;
+$newname = $rand.".".$ext; 
 $target = 'uploads/postpics/'.$newname;
-move_uploaded_file( $_FILES['my_file']["tmp_name"][$i], $target);
+move_uploaded_file( $_FILES['fileToUpload']['tmp_name'], $target);
+
+echo $target;
+}
 array_push($locs,$target);
 
-                }
-  
-            }
+
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
@@ -42,6 +36,16 @@ $res=mysqli_query($conn,$q1);
 
 
 
+
+//$l_id=$_SESSION["Latest_pic"];
+
+/*
+$q2="SELECT * FROM pic_data WHERE Pic_id='$l_id'";
+
+$res2=mysqli_query($conn,$q2);
+ $pic=mysqli_fetch_array($res2, MYSQLI_ASSOC);
+
+ */
 
  $pic_url=$target;
 
@@ -93,24 +97,17 @@ width :40px;
    .post_content{
             box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             height:auto;
-            width:400px;
+            width:550px;
             margin-top: 50px;
             margin-left: 500px;
 }
 .post_pic{
-   
-    height: 300px;
-    
+    width: 250px;
+    height: 250px;
+    margin-left: 100px;
+    border-radius: 6px;
 }
- .carousel-inner{
-
-    width: 400px;
-    height: 300px;
-
-     
-  }
-
-
+  
 </style>
 	<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
@@ -142,47 +139,7 @@ width :40px;
 <div class="post_content" >
  
 
-
-
-<div id="carouselExampleControls"  class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
-
-    <?php
-    for ($i=0; $i <count($locs); $i++) { 
-      
-    
-    ?>
-    <?php if($i==0)
-    { ?>
-     <div class="carousel-item active post_pic">
-      <img style="height: 300px;width: 400px;" alt="First slide" src=<?php echo $locs[$i]; ?>>
-    </div>
-    <?php
-  } 
-  else {?>
-    <div class='carousel-item post_pic'>
-    <img  style="height: 300px;width: 400px;" alt='First slide' src= <?php echo $locs[$i]; ?>>
-    </div>
-
-    <?php
-    }
-  }
-    ?>
-    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
-    
-    
-  </div>
-</div>
-
-
-
+<img src="<?php echo $pic_url ?>" class="post_pic">
 
 <?php
 $ing_values="";
@@ -260,7 +217,7 @@ echo nl2br ("Serves"." $serves\n");
     if (isset($_POST["steps"]) && is_array($_POST["steps"]))
     { 
 
-      
+      print_r($_POST["steps"]);
     $input_array_name_2 = array_filter($_POST["steps"]); 
     foreach($input_array_name_2 as $field_value)
     {
@@ -293,11 +250,7 @@ $new_id=$_SESSION["newpost_id"];
 
 $post_picture=$locs[0];
 
-$steps_pics=array_slice($locs,1);
-
-$steps_locs=implode(",",$steps_pics);
-
-  $q3="INSERT INTO post_data VALUES('$new_id','$c_id','$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values','$origin','$post_picture','$f',CURRENT_TIMESTAMP(),'$steps_locs')";
+  $q3="INSERT INTO post_data VALUES('$new_id','$c_id','$LoggedUID','$Title','$tag_values','$description','$serves','$ing_values','$steps_values','$origin','$post_picture','$f',CURRENT_TIMESTAMP())";
 
 
 
@@ -305,7 +258,9 @@ $steps_locs=implode(",",$steps_pics);
 if(mysqli_query($conn, $q3))
 {
 
-$q_flame="INSERT INTO flame_data VALUES('$new_id','$f')";
+  $last_id = mysqli_insert_id($conn);
+  
+$q_flame="INSERT INTO flame_data VALUES('$last_id','$f')";
 if(mysqli_query($conn, $q_flame))
 {
   echo '<script>alert("Recipe Posted Successfully")</script>';

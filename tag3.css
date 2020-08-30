@@ -1,0 +1,79 @@
+/*
+	Copywrite Square Bracket LLC - Sean Clark 2012-3012
+	http://square-bracket.com 	
+	http://connect.ai	
+	http://youtube.com/optikalefxx
+*/
+.tags-wrapper {
+	background:white;
+	overflow:hidden;
+	width:300px;
+	height: 50px;
+	list-style-type:none;
+	
+}
+.tags-wrapper ul {
+	margin:0px;
+	padding:0px;
+	list-style-type:none;
+}
+.tags-wrapper li {
+	float:left;
+	list-style-type:none;
+}
+.tags-wrapper li.tag {
+	font-family:verdana;
+	font-size:11px;
+	list-style-type:none;
+	border-radius:3px;
+	list-style: none;
+	background-clip: padding-box;
+	background-color:#ccccb3; 
+	border: 1px solid rgb(170, 170, 170);
+	line-height: 13px;
+	padding: 1px 3px 3px 5px;
+	margin: 3px 0 3px 5px;
+}
+.tags-wrapper li a {
+	list-style-type:none;
+	text-decoration:none;
+	color:white;
+	padding:2px;
+	display:inline-block;
+	margin-left:6px;
+	color: rgb(0, 0, 0);
+}
+
+.tags-wrapper input {
+	display:none;
+	list-style-type:none;
+}
+.tags-wrapper li.tags-input {
+	white-space: nowrap;
+	margin: 0;
+	padding: 0;
+	list-style-type:none;
+	height: 50px;
+	width: 100px;
+}
+.tags-wrapper li input {
+	display:block;
+	outline:none;
+	border:none;
+	font-size:11px;
+	height: auto;
+	width:40px;
+	margin: 4px;
+	list-style-type:none;
+}
+.tags-wrapper .autofill {
+	position:relative;
+	top:4px;
+	list-style-type:none;
+}
+
+.tag
+{
+	list-style-type:none;
+	background: black;
+}

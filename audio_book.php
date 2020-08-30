@@ -7,12 +7,23 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
- $user=get_user($LoggedUID);
 
- $profile_pic_url=$user["profilepic"];
+
+$profile =get_user($LoggedUID);
+
+$profile_pic_url=$profile["profilepic"];
+
+
+$q="SELECT * FROM audio_post";
+
+$list=give($q);
+
 
 
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,16 +41,22 @@ width :40px;
  border-radius: 50%;
     float: left;
 }
-
- #t1{
-width: 40%;
-margin-left: 300px;
-margin-top: 50px;
+.post{
+      
+      height:200px;
+      width:700px;
+      border-radius: 6px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+     margin-bottom: 25px;   
 }
-#Title_1
+  .everything
 {
-  margin-left: 440px;
-  font-size: 30px;
+  margin-left: 300px;
+  margin-top: 100px;
+}
+.player
+{
+  margin-top: 50px;
 }
   
 </style>
@@ -51,8 +68,9 @@ margin-top: 50px;
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-       <li class="nav-item">
+      <ul class="navbar-nav">
+    
+     <li class="nav-item">
         <a class="nav-link" href="profile.php"> <img src="<?php echo $profile_pic_url ?>" class="profilepic"></a>
       </li>
       &nbsp 
@@ -69,76 +87,26 @@ margin-top: 50px;
     </ul>
   </div>
 </nav>
-<p id="Title_1">Recipes of the Month</p>
-<table class="table table-hover" id="t1">
-  
-  <thead>
- <tr>
-    <th>Position</th>
-    <th>Recipe</th>
-    <th>By</th>
-    <th>Flames</th>
-  </tr>
-</thead>
-<tbody>
-
+<div class="everything">
 <?php
-$timestamp = date("m");
+foreach ($list as $element) {
 
-
-$q2="SELECT* FROM flame_data ORDER BY Flames DESC";
-
-$posts=give($q2);
-
-
-$count=1;
-
-foreach ($posts as $post) {
-
-if($count<11)
-{
-$curr_post_id=$post["P_ID"];
-
-$query="SELECT * FROM post_data WHERE P_ID='$curr_post_id'";
-
- $recipes=give($query);
-
-foreach ($recipes as $recipe) {
-
-
-
-  ?>
-
-
-<tr>
-
-<td><?php echo $count; ?></td>
-<td>  
-<a href="displayrecipe.php?ID=<?php echo $curr_post_id ;?>">
-  <?php echo $recipe["Title"]; ?>
-</a>
-</td>
-
-<?php
-$owner=$recipe["U_ID"];
-
-$user=get_user($owner);
-?>
-<td>  <?php echo $user["Name"]; ?></td>
-<td>  <?php echo $post["Flames"]; ?></td>
-<?php  
-$count++;
-}
-}
-}
 
 ?>
-</tr>
-</tbody>
-</table>
+<div class="post">
+ 
+ <?php echo $element["Title"];?> 
+ <br>
 
+ <audio controls class="player">
+   <source src="<?php echo $element["Location"];?>" type="audio/wav">
+ </audio>
+</div>
 
-
+<?php 
+}
+?>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

@@ -7,8 +7,7 @@ $LoggedUID= $_SESSION["LoggedUID"];
 
 
 
-$user =get_user($LoggedUID);
- $profile_pic_url=$user["profilepic"];
+
 
 
 ?>
@@ -151,54 +150,7 @@ $foodname=mysqli_fetch_array($res,MYSQL_ASSOC);
 
 <script>
 
-	var foodquery = <?php echo json_encode($foodname["entry_content"]); ?>;
 	
-
-var url=" https://www.googleapis.com/customsearch/v1?key=AIzaSyCeOsf_ZutZPxiRMTeBHeQcZzGiiteSnX8&cx=008767739067013867662:qovos-gsxu8&q="+foodquery;
-
-async function getdata()
-{
-
-const response=await fetch(url);
-const json=await response.json();
-
-for (var i = 0; i<5 ; i++)
- {
-	
-		var title = document.createElement("H3");
-		title.innerHTML = json.items[i].title;                
-		document.getElementById("content").appendChild(title);
-
-		var descp = document.createElement("P");
-		descp.innerHTML = json.items[i].snippet;                
-		document.getElementById("content").appendChild(descp);
-
-
-
-	  		var fimg = document.createElement("IMG");
-  			fimg.setAttribute("src", json.items[i].pagemap.cse_thumbnail[0].src);
-			document.getElementById("content").appendChild(fimg);
-
-	  			
-				linebreak = document.createElement("br");
-				document.getElementById("content").appendChild(linebreak);
-
-
-	  			var a = document.createElement('a'); 
-                var link = document.createTextNode("View Full Recipe");
-                a.appendChild(link);   
-                a.title = "View Full Recipe"; 
-                a.href = json.items[i].formattedUrl;  
-                document.getElementById("content").appendChild(a);
-
-                         
-}
-}
- getdata();
-  $(window).load(function() {  
-      $("#loader").fadeOut(1000);  
-   });
-
 
 
  

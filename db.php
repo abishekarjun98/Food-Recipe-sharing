@@ -42,8 +42,7 @@ function get_user($U_id)
  	$q1="SELECT * FROM Userinfo WHERE ID='$U_id'";
 	$res_user=mysqli_query($conn,$q1);
  	$user=mysqli_fetch_array($res_user, MYSQLI_ASSOC);
- 	$profile_pic_url=$user["profilepic"];
-
+ 	
  
  return $user;
 

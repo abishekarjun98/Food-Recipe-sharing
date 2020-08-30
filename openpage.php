@@ -5,7 +5,7 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
-
+$_SESSION["visited"]=1;
 $user =get_user($LoggedUID);
  $profile_pic_url=$user["profilepic"];
 
@@ -79,10 +79,7 @@ float: right;
     width: 200px;
     height: 197px;
     border-radius: 6px;
-    float: left;
-    margin-right: 30px;
-    margin-left: 30px;
-}
+    }
 .content{
   font-size: 18px;
 }
@@ -164,7 +161,18 @@ position: sticky;
   float: right;
   margin-right: 100px;
 }
+.carousel-inner{
+
+    width: 200px;
+    height: 197px;
+    float: left;
+    margin-right: 30px;
+    margin-left: 30px;
+
+  }
 </style>
+
+
 <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #00E506">
   
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -192,34 +200,31 @@ position: sticky;
 </nav>
 </head>
 <body>
-<!--
-<div class="l_side" >
-<div id="logo">
-<a href="addrecipe2.php">
-<img  src="images/addrecipe2.JPG" width="200" height="200" id="i">
-</a>
-</div>
-<br>
-<div id="logo_2" >
-<a href="map.php">
-<img  src="images/explore2.JPG" width="200" height="200" id="i">
-</a>
-</div>
-</div>
 
-<div class="r_side">
-  <div id="logo_3">
-    <a href="leaderb.php">
-      <img src="images/leader.JPG" width="200" height="200" id="i">
-    </a>
-    
-  </div>
-  
+<?php
+
+$def=0;
+$q_alert="SELECT * FROM messaage WHERE Reciever='$LoggedUID'AND Shown='$def'";
+
+$res_alert=mysqli_query($conn,$q_alert);
+$rows=mysqli_num_rows($res_alert);
+
+if($rows>0){
+?><div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Congrats!!!</strong> You have Won a Contest!! and been awarded with a gold badge!
+
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
--->
-
-
-
+<?php
+$q_alert_update="UPDATE messaage SET Shown=1 WHERE Reciever='$LoggedUID' ";
+if(!mysqli_query($conn,$q_alert_update))
+{
+  echo "Error: " . $q_alert_update . "<br>" . $conn->error;
+}
+ }
+ ?>
 
 
 <button type="button" class="btn btn-light" data-toggle="modal" data-target="#daily_tip" id="b_btn">
@@ -242,8 +247,19 @@ position: sticky;
       </div>
       <div class="modal-body">
         <?php
-        $num=rand(0,60);
+        
+
+        if($_SESSION["visited"]==1)
+        {
+          $num=rand(0,60);
+         $_SESSION["visited"]++; 
+        }
+
+
+        $curr_time=date("H:i");
         $q_tips="SELECT * from daily_tips WHERE ID='$num'";
+
+
         $tip=give_unique($q_tips);
         print_r($tip["Tip"]);
 
@@ -259,7 +275,7 @@ position: sticky;
 
 
 <?php
-
+ $curr_date=date("Y-m-d");
 
 $q6="SELECT* FROM comp_data WHERE '$curr_date'< End_date ";
   $posts= give($q6);
@@ -323,7 +339,9 @@ $profile_pic_name=$posted_by["Name"];
  
  $id=$post["Post_Pic"];
 
+ $steps_string=$post["steps_pic"];
 
+/*
 $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 
 
@@ -331,14 +349,48 @@ $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 
  $post_pic_url=$post_pic["Location"];
 
+ */
+
+
  ?>
 
  <div class="post"> 
-
 <img src="<?php echo $posted_by_url; ?>" class="profilepic"> 
 <span><h4> <?php echo $profile_pic_name; ?></h4></span>
 <br>
- <img src="<?php echo $post_pic_url; ?>" class="post_pic"> 
+<div id="carouselExampleControls"  class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+<div class="carousel-item active ">
+      <img class="post_pic" src=<?php echo $id; ?>>
+    </div>
+<?php 
+  $steps_pics_array = explode (",", $steps_string);
+         $array_3 = array_filter($steps_pics_array);
+         
+       foreach($array_3 as $field_value){
+        
+
+        ?>
+        <div class='carousel-item'>
+    <img class="post_pic" src= <?php echo $field_value; ?>>
+    </div>
+
+        <?php 
+     }?>
+
+ <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+
+
+    
+  </div>
+</div>
   
 <h3>
 <?php
@@ -348,8 +400,8 @@ $q5="SELECT * FROM pic_data WHERE Pic_id='$id'";
 <p id="date_pos">
   <?php
   $t=date($post["Timestamp"]);
-  $curr_time=date("Y-m-d H:i");
-  $mt=$curr_time+$t;
+  
+  //$mt=$curr_time+$t;
 echo nl2br($t."\n");
 
   ?>

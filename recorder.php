@@ -221,7 +221,7 @@ fill(c);
 
 
 
-$path="C:/backend/htdocs/finalproj/audio_rec/".$filename.".wav";
+$path="audio_rec/".$filename.".wav";
 
 $q="INSERT INTO audio_post VALUES(null,'$LoggedUID','$Title','$path')";
 

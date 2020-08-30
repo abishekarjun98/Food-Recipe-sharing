@@ -9,16 +9,44 @@ require 'db.php';
 
 $LoggedUID= $_SESSION["LoggedUID"];
 
+$_SESSION["flag"]=0;
+
+//$l_id=1;
+
+//echo $_SESSION["Latest_pic"]; 
+if(empty($_SESSION["Latest_pic"]))
+{
+	
+	$l_id=1;
+	
+}
+else
+{
+	$l_id=$_SESSION["Latest_pic"];
+}
+
+if($l_id==null)
+{
+	$l_id=1;
+}
 
 
 
+$q1="SELECT * FROM pic_data WHERE Pic_id='$l_id'";
 
-$user1 =get_user($LoggedUID);
+$res=mysqli_query($conn,$q1);
+ $pic=mysqli_fetch_array($res, MYSQLI_ASSOC);
+
+ $pic_url=$pic["Location"];
+
+
+
+ $q2="SELECT * FROM Userinfo WHERE ID='$LoggedUID'";
+
+$res1=mysqli_query($conn,$q2);
+ $user1=mysqli_fetch_array($res1, MYSQLI_ASSOC);
 
  $profile_pic_url=$user1["profilepic"];
-
-
-
 
 
  if(isset($_GET["C_ID"]))
@@ -109,14 +137,13 @@ margin-bottom: 50px;
 width: 40px;
 height: 40px;
 float: left;
-margin-left: -180px;
-margin-bottom: 20px; 
+margin-left: 130px;
+
 }
 .camera_btn:hover
         {
             
             cursor: pointer;
-            transform: scale(1.1);
         }
 
 .btn_grp
@@ -143,7 +170,7 @@ width :40px;
 #Record
 {
 	float: right;
-	margin-top: -300px;
+	margin-top: -600px;
 	margin-right: 100px;
 }
 #create_ingredients
@@ -190,17 +217,19 @@ width :40px;
 
 
 
-
-
-<form method="POST" action="submitpost.php?C_ID=<?php echo $Contest_id;?> " id="myform" enctype="multipart/form-data">
-
-	<label class="custom-file-upload">
-    <input type="file" name="my_file[]" multiple>
-    <img src="images/camera.png" class="camera_btn">
-    <span style="margin-left: -100px;">Add Pics</span>
+<div id="photoform">
+	<span>Add a Pic</span>
+<form action="uploadtolocal.php" method="post" enctype="multipart/form-data">
+<label class="custom-file-upload">
+    <input type="file" name="fileToUpload" id="fileToUpload" >
+    <img src="images/camera.png" class="camera_btn" >
 </label>
+  <input type="image" src="images/uploadpic.png" alt="Submit" class="btn">
+</form>
+</div>
 
-	<input type="text" name="Title" placeholder="Title" style="float: left; margin-top: 50px;">
+<form method="POST" action="submitpost.php?C_ID=<?php echo $Contest_id;?> " id="myform">
+	<input type="text" name="Title" placeholder="Title">
 	<br><br><br>
 		<input type="text" id="tag" name="tag"  value="veg"/>
 		<br><br>
@@ -228,7 +257,9 @@ width :40px;
 <label for id="origin">This food is native to ?</label>
 <input type="text" name="origin"placeholder="Ex:TamilNadu..">
 <br><br>
-			<button type="submit" class="btn btn-warning" style="width:120px; margin-left: 100px;height: 60px;">Create Recipe!!</button>
+			<input type="Submit" value="Create Recipe">
+			<input type="submit" formaction="recorder.php" value="Create Audio Recipe">
+
 </form>
 
 <form action="recorder.php" method="POST" id="Record">
@@ -247,7 +278,31 @@ width :40px;
 <button id='create_steps' type="button" class="btn btn-light">+Steps</button>
 
 </div>
-
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog"  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Pic</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="new.php" method="post" enctype="multipart/form-data">
+<label class="custom-file-upload">
+    <input type="file" name="fileToUpload" id="fileToUpload" >
+    <img src="images/camera.png" class="camera_btn" >
+</label>
+  <input type="image" src="images/uploadpic.png" alt="Submit" class="btn_u">
+</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
@@ -310,6 +365,7 @@ $(".steps").append([
 
          $('<input>',{ "name":"steps[]","placeholder":"step"+j,"height":"70" }),
         $("<img>",{"src":"images/remove.png","class":"remove_step"}),
+        $("<img>",{"src":"images/camera.png","class":"remove_ing","data-toggle":"modal","data-target":"#uploadModal"}),
     ])
 ])
 });
@@ -338,29 +394,3 @@ $(function() {
 -->
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
-<?php
-
-/*
-if(isset($_FILES['fileToUpload']['name']))
-{
-
-$locs=array();
-$info = pathinfo($_FILES['fileToUpload']['name']);
-$ext = $info['extension']; 
-$newname = $rand.".".$ext; 
-
-$target = 'uploads/postpics/'.$newname;
-move_uploaded_file( $_FILES['fileToUpload']['tmp_name'], $target);
-
-echo $target;
-
-array_push($locs,$target);
-
-
-$q5="INSERT INTO steps_pic VALUES ('$postid',null,'$path')";
-mysqli_query($conn,$q5);*/
-
-
-
-?>
